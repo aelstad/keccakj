@@ -1,0 +1,5 @@
+The test vectors files are copied from https://github.com/gvanas/KeccakCodePackage
+
+The permuation implementation is based on the reference C implementation in https://github.com/gvanas/KeccakCodePackage 
+
+Please visit http://keccak.noekeon.org/ for excellent information about Keccack.
