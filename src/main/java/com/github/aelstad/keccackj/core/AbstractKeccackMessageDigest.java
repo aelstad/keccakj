@@ -62,7 +62,7 @@ public abstract class AbstractKeccackMessageDigest extends MessageDigest {
 	}
 	
 			
-	public void engineUpdateBits(byte[] bits, int bitOff, int bitLength)
+	public void engineUpdateBits(byte[] bits, long bitOff, long bitLength)
 	{		
 		absorbStream.writeBits(bits, bitOff, bitLength);
 	}
@@ -74,7 +74,7 @@ public abstract class AbstractKeccackMessageDigest extends MessageDigest {
 
 	@Override
 	protected void engineUpdate(byte[] input, int offset, int len) {
-		engineUpdateBits(input, offset<<3, len<<3);
+		engineUpdateBits(input, ((long) offset)<<3, ((long)len)<<3);
 	}
 		
 	public byte[] getRateBits(int boff, int len)
