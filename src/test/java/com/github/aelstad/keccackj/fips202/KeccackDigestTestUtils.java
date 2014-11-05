@@ -76,7 +76,11 @@ public class KeccackDigestTestUtils {
 		for(DigestTest dt : tests) {
 			messageDigest.reset();
 		
-			messageDigest.engineUpdateBits(dt.msg, 0, dt.len);
+			if((dt.len & 7)==0)
+				messageDigest.update(dt.msg, 0, dt.len>>3);
+			else			
+				messageDigest.engineUpdateBits(dt.msg, 0, dt.len);
+			
 			System.out.println("Rate is now "+ new String(Hex.encodeHex(messageDigest.getRateBits(0, Math.min(dt.len, messageDigest.getRateBits())))));
 			byte[] md = messageDigest.digest();
 			System.out.println("Testing length "+ dt.len + ". Got "+new String(Hex.encodeHex(md)));
