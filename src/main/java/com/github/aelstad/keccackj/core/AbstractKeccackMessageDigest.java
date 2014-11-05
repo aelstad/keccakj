@@ -74,7 +74,7 @@ public abstract class AbstractKeccackMessageDigest extends MessageDigest {
 
 	@Override
 	protected void engineUpdate(byte[] input, int offset, int len) {
-		engineUpdateBits(input, offset>>3, len>>3);
+		engineUpdateBits(input, offset<<3, len<<3);
 	}
 		
 	public byte[] getRateBits(int boff, int len)
