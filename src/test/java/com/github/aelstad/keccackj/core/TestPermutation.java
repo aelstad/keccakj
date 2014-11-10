@@ -235,16 +235,19 @@ public class TestPermutation
 	@Test
 	public void testPermutationSpeed() {
 		int ROUNDS=15;
-		int BENCH=10000;
+		int BENCH=100000;
+
 		Keccack1600 keccack1600 = new Keccack1600(0);
+		long total=0;
 		for(int i=0; i < ROUNDS; ++i) {
 			long ts1 = System.currentTimeMillis();
 			for(int j=0; j < BENCH; ++j) {
 				keccack1600.permute();
 			}
 			long ts2 = System.currentTimeMillis();
-			System.out.println("Permutation speed: "+ BENCH*1000/(ts2-ts1) + " permutations/second. ");
+			total += (ts2-ts1);
 		}
+		System.out.println("Average Permutation speed: "+ ROUNDS*BENCH*1000/(total) + " permutations/second. ");
 	}
 	
 		
