@@ -40,7 +40,7 @@ public class TestStreamEncryption {
 		byte[] key = new byte[128];
 		keyRandom.nextBytes(key);
 		
-		for(int i=1; i < 1024; ++i) {
+		for(int i=8; i < 16384; ++i) {
 			byte[] data = new byte[i];			
 			byte[] nounce = new byte[128];
 			keyRandom.nextBytes(nounce);
