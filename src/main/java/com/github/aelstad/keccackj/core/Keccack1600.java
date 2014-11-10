@@ -148,13 +148,177 @@ public final class Keccack1600 {
 			
 	public void permute()
 	{
-		for(int i=firstRound; i < NR_ROUNDS; ++i) {
+/*
+  for (int i=firstRound; i < NR_ROUNDS; ++i) {
 			theta();
 			rho();
 			pi();
 			chi();
 			iota(i);
-		}		
+	}
+*/
+		long out0 = state[0];
+		long out1 = state[1];
+		long out2 = state[2];
+		long out3 = state[3];
+		long out4 = state[4];
+		long out5 = state[5];
+		long out6 = state[6];
+		long out7 = state[7];
+		long out8 = state[8];
+		long out9 = state[9];
+		long out10 = state[10];
+		long out11 = state[11];
+		long out12 = state[12];
+		long out13 = state[13];
+		long out14 = state[14];
+		long out15 = state[15];
+		long out16 = state[16];
+		long out17 = state[17];
+		long out18 = state[18];
+		long out19 = state[19];
+		long out20 = state[20];
+		long out21 = state[21];
+		long out22 = state[22];
+		long out23 = state[23];
+		long out24 = state[24];
+		for (int i=firstRound; i < NR_ROUNDS; ++i) {
+		// Theta
+		long c0 = out0;
+		long c1 = out1;
+		long c2 = out2;
+		long c3 = out3;
+		long c4 = out4;
+		c0 ^= out5;
+		c1 ^= out6;
+		c2 ^= out7;
+		c3 ^= out8;
+		c4 ^= out9;
+		c0 ^= out10;
+		c1 ^= out11;
+		c2 ^= out12;
+		c3 ^= out13;
+		c4 ^= out14;
+		c0 ^= out15;
+		c1 ^= out16;
+		c2 ^= out17;
+		c3 ^= out18;
+		c4 ^= out19;
+		c0 ^= out20;
+		c1 ^= out21;
+		c2 ^= out22;
+		c3 ^= out23;
+		c4 ^= out24;
+		long d0 = ((c1  << 1) | (c1 >>> 63 )) ^ c4;
+		long d1 = ((c2  << 1) | (c2 >>> 63 )) ^ c0;
+		long d2 = ((c3  << 1) | (c3 >>> 63 )) ^ c1;
+		long d3 = ((c4  << 1) | (c4 >>> 63 )) ^ c2;
+		long d4 = ((c0  << 1) | (c0 >>> 63 )) ^ c3;
+		out0 = out0 ^ d0;
+		out1 = out1 ^ d1;
+		out2 = out2 ^ d2;
+		out3 = out3 ^ d3;
+		out4 = out4 ^ d4;
+		out5 = out5 ^ d0;
+		out6 = out6 ^ d1;
+		out7 = out7 ^ d2;
+		out8 = out8 ^ d3;
+		out9 = out9 ^ d4;
+		out10 = out10 ^ d0;
+		out11 = out11 ^ d1;
+		out12 = out12 ^ d2;
+		out13 = out13 ^ d3;
+		out14 = out14 ^ d4;
+		out15 = out15 ^ d0;
+		out16 = out16 ^ d1;
+		out17 = out17 ^ d2;
+		out18 = out18 ^ d3;
+		out19 = out19 ^ d4;
+		out20 = out20 ^ d0;
+		out21 = out21 ^ d1;
+		out22 = out22 ^ d2;
+		out23 = out23 ^ d3;
+		out24 = out24 ^ d4;
+		// RHO AND PI
+		long piOut0 = out0;
+		long piOut16 = ((out5  << 36) | (out5 >>> 28 ));
+		long piOut7 = ((out10  << 3) | (out10 >>> 61 ));
+		long piOut23 = ((out15  << 41) | (out15 >>> 23 ));
+		long piOut14 = ((out20  << 18) | (out20 >>> 46 ));
+		long piOut10 = ((out1  << 1) | (out1 >>> 63 ));
+		long piOut1 = ((out6  << 44) | (out6 >>> 20 ));
+		long piOut17 = ((out11  << 10) | (out11 >>> 54 ));
+		long piOut8 = ((out16  << 45) | (out16 >>> 19 ));
+		long piOut24 = ((out21  << 2) | (out21 >>> 62 ));
+		long piOut20 = ((out2  << 62) | (out2 >>> 2 ));
+		long piOut11 = ((out7  << 6) | (out7 >>> 58 ));
+		long piOut2 = ((out12  << 43) | (out12 >>> 21 ));
+		long piOut18 = ((out17  << 15) | (out17 >>> 49 ));
+		long piOut9 = ((out22  << 61) | (out22 >>> 3 ));
+		long piOut5 = ((out3  << 28) | (out3 >>> 36 ));
+		long piOut21 = ((out8  << 55) | (out8 >>> 9 ));
+		long piOut12 = ((out13  << 25) | (out13 >>> 39 ));
+		long piOut3 = ((out18  << 21) | (out18 >>> 43 ));
+		long piOut19 = ((out23  << 56) | (out23 >>> 8 ));
+		long piOut15 = ((out4  << 27) | (out4 >>> 37 ));
+		long piOut6 = ((out9  << 20) | (out9 >>> 44 ));
+		long piOut22 = ((out14  << 39) | (out14 >>> 25 ));
+		long piOut13 = ((out19  << 8) | (out19 >>> 56 ));
+		long piOut4 = ((out24  << 14) | (out24 >>> 50 ));
+		// CHI
+		out0 = piOut0 ^ ((~piOut1) & piOut2);
+		out1 = piOut1 ^ ((~piOut2) & piOut3);
+		out2 = piOut2 ^ ((~piOut3) & piOut4);
+		out3 = piOut3 ^ ((~piOut4) & piOut0);
+		out4 = piOut4 ^ ((~piOut0) & piOut1);
+		out5 = piOut5 ^ ((~piOut6) & piOut7);
+		out6 = piOut6 ^ ((~piOut7) & piOut8);
+		out7 = piOut7 ^ ((~piOut8) & piOut9);
+		out8 = piOut8 ^ ((~piOut9) & piOut5);
+		out9 = piOut9 ^ ((~piOut5) & piOut6);
+		out10 = piOut10 ^ ((~piOut11) & piOut12);
+		out11 = piOut11 ^ ((~piOut12) & piOut13);
+		out12 = piOut12 ^ ((~piOut13) & piOut14);
+		out13 = piOut13 ^ ((~piOut14) & piOut10);
+		out14 = piOut14 ^ ((~piOut10) & piOut11);
+		out15 = piOut15 ^ ((~piOut16) & piOut17);
+		out16 = piOut16 ^ ((~piOut17) & piOut18);
+		out17 = piOut17 ^ ((~piOut18) & piOut19);
+		out18 = piOut18 ^ ((~piOut19) & piOut15);
+		out19 = piOut19 ^ ((~piOut15) & piOut16);
+		out20 = piOut20 ^ ((~piOut21) & piOut22);
+		out21 = piOut21 ^ ((~piOut22) & piOut23);
+		out22 = piOut22 ^ ((~piOut23) & piOut24);
+		out23 = piOut23 ^ ((~piOut24) & piOut20);
+		out24 = piOut24 ^ ((~piOut20) & piOut21);
+		// IOTA
+		out0 ^= KeccackRoundConstants[i];
+		}
+		state[0] = out0;
+		state[1] = out1;
+		state[2] = out2;
+		state[3] = out3;
+		state[4] = out4;
+		state[5] = out5;
+		state[6] = out6;
+		state[7] = out7;
+		state[8] = out8;
+		state[9] = out9;
+		state[10] = out10;
+		state[11] = out11;
+		state[12] = out12;
+		state[13] = out13;
+		state[14] = out14;
+		state[15] = out15;
+		state[16] = out16;
+		state[17] = out17;
+		state[18] = out18;
+		state[19] = out19;
+		state[20] = out20;
+		state[21] = out21;
+		state[22] = out22;
+		state[23] = out23;
+		state[24] = out24;
 	}
 		
 	public void clear() {
@@ -165,38 +329,18 @@ public final class Keccack1600 {
 	final static int NR_ROUNDS = 24;
 	final static int NR_LANES = 25;
 		
-	long[] state = new long[NR_LANES + 	// A
-	                                NR_LANES +	// tempA
-	                                5 		+ // tempC
-	                                5		// tempD
-	                               ];
+	long[] state = new long[NR_LANES];
 	
 	int rateBytes;
 	int rateBits;
 	int capacitityBits;
 	int firstRound;
 		
-	final static int tempCidx(int idx) {
-		return NR_LANES+NR_LANES+idx;
-	}
-	
-	final static int tempDidx(int idx) {
-		return NR_LANES+NR_LANES+5+idx;
-	}
-	
 	final static int index(int x, int y) 
 	{
 		return (((x)%5)+5*((y)%5));
 	}
-	
-	final static int aIdx(int x, int y) {
-		return index(x,y);
-	}
-	
-	final static int tempAIdx(int x, int y) {
-		return NR_LANES+index(x,y);
-	}
-	
+
 	final static long rol64(long l, int offset) {
 		return (offset != 0) ?
 				((l << offset) |  (l >>> (64-offset))) : l;
@@ -256,18 +400,20 @@ public final class Keccack1600 {
 	 	 	
 	final void theta()
 	{
-	    int x, y;
-	    
-	    for(x=0; x<5; x++) {
-	        state[tempCidx(x)] = 0;
-	        for(y=0; y<5; y++)
-	            state[tempCidx(x)] ^= state[index(x, y)];
-	    }
-	    for(x=0; x<5; x++)
-	        state[tempDidx(x)] = rol64(state[tempCidx((x+1)%5)], 1) ^ state[tempCidx((x+4)%5)];
-	    for(x=0; x<5; x++)
-	        for(y=0; y<5; y++)
-	            state[aIdx(x, y)] ^= state[tempDidx(x)];
+		long[] tempC = new long[5];
+		long[] tempD = new long[5];
+	       int x, y;
+
+	       for(x=0; x<5; x++) {
+	           tempC[x] = 0;
+	           for(y=0; y<5; y++)
+	               tempC[x] ^= state[index(x, y)];
+	       }
+	       for(x=0; x<5; x++)
+	           tempD[x] = rol64(tempC[((x+1)%5)], 1) ^ tempC[((x+4)%5)];
+	       for(x=0; x<5; x++)
+	           for(y=0; y<5; y++)
+	               state[index(x, y)] ^= tempD[x];
 	}
 		
 	final void rho()
@@ -275,28 +421,94 @@ public final class Keccack1600 {
 	    int x, y;
 
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
-	        state[aIdx(x, y)] = rol64(state[aIdx(x, y)], KeccakRhoOffsets[index(x, y)]);
+	        state[index(x, y)] = rol64(state[index(x, y)], KeccakRhoOffsets[index(x, y)]);
 	}	
 	
 	final void pi()
 	{
+		long[] tempA = new long[25];
 	    int x, y;
 	    
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
-	        state[tempAIdx(x, y)] = state[index(x, y)];
+	        tempA[index(x, y)] = state[index(x, y)];
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
-	        state[index(0*x+1*y, 2*x+3*y)] = state[tempAIdx(x, y)];
+	        state[index(0*x+1*y, 2*x+3*y)] = tempA[index(x, y)];
+	}
+
+	static void writeRoundToStdout() {
+		/* Generate code for round */
+		for(int i=0; i < 25; ++i) {
+			System.out.println("long out"+i + " = state["+i+ "];");
+		}
+
+		System.out.println("for (int i=firstRound; i < NR_ROUNDS; ++i) { ");
+		System.out.println("// Theta ");
+		for(int x=0; x<5; x++) {
+			System.out.println("long c"+x + " = out"+x+";");
+		}
+
+
+		for(int y=1; y < 5; ++y) {
+			for(int x=0; x<5; x++) {
+				System.out.println("c"+x + " ^= out"+(y*5+x)+";");
+			}
+		}
+        for(int x=0; x<5; x++) {
+			int cIdx1 = (x + 1) % 5;
+			int cIdx2 = (x + 4) % 5;
+			String c1 = "c" + cIdx1;
+			String c2 = "c" + cIdx2;
+
+			System.out.println("long d" + x + " = ((" + c1 + "  << " + 1 + ") | (" + c1 + " >>> " + 63 + " )) ^ " + c2 + ";");
+        }
+		for(int x=0; x<25; x++) {
+			System.out.println("out"+x + " = out"+(x)+" ^ d"+(x%5)+ ";");
+		}
+		System.out.println("// RHO AND PI ");
+		/* generate rho and pi */
+		for(int x=0; x<5; ++x) {
+			for(int y=0; y < 5; ++y) {
+				int thetaOutIndex = index(x, y);
+				int outPiIndex =  index(0*x+1*y, 2*x+3*y);
+				int rotationOffset = KeccakRhoOffsets[thetaOutIndex];
+				String theta = "out" +thetaOutIndex;
+				if(rotationOffset == 0) {
+					System.out.println("long piOut"+outPiIndex+ " = " +theta + ";");
+				} else {
+					int rotationRight = 64-rotationOffset;
+					System.out.println("long piOut"+outPiIndex + " = ((" + theta + "  << "+rotationOffset + ") | (" + theta + " >>> " + rotationRight + " ));");
+				}
+			}
+		}
+		/* chi */
+		System.out.println("// CHI");
+	    for(int y=0; y<5; y++) {
+	        for(int x=0; x<5; x++) {
+				int piOutIndex1 = index(x, y);
+				int piOutIndex2 = index(x + 1, y);
+				int piOutIndex3 = index(x + 2, y);
+				System.out.println("out" + piOutIndex1 + " = piOut" + piOutIndex1 + " ^ ((~piOut" + piOutIndex2 + ") & piOut" + piOutIndex3 + ");");
+	        }
+	    }
+	    /* iota */
+	    System.out.println("// IOTA");
+	    System.out.println("out0 ^= KeccackRoundConstants[i];");
+		System.out.println("}");
+		for(int i=0; i < 25; ++i) {
+			System.out.println("state["+i + "] = out"+i + ";");
+		}
 	}
 	
 	final void chi()
 	{
+		long[] tempC = new long[5];
 	    int x, y;
 
 	    for(y=0; y<5; y++) {
 	        for(x=0; x<5; x++)
-	            state[tempCidx(x)] = state[index(x, y)] ^ ((~state[index(x+1, y)]) & state[index(x+2, y)]);
+	            tempC[x] = state[index(x, y)] ^ ((~state[index(x+1, y)]) & state[index(x+2, y)]);
 	        for(x=0; x<5; x++)
-	            state[index(x, y)] = state[tempCidx(x)];
+	            state[index(x, y)] = tempC[x];
 	    }
 	}
 	
