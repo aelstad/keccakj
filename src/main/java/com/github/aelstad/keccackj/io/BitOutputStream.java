@@ -24,6 +24,7 @@ public abstract class BitOutputStream extends OutputStream {
 
 	@Override
 	public void write(byte[] b, int off, int len) {
+		writeBits(b, ((long) (off))<<3, ((long)len)<<3);
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public abstract class BitOutputStream extends OutputStream {
 	
 	@Override
 	public void write(int b) {
-		
+		writeBits(new byte[] { (byte) b }, 0, 8);
 	}
 
 	public abstract void writeBits(byte[] arg, long bitOff, long bitLen);

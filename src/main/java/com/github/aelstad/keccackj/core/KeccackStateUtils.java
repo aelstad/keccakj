@@ -20,16 +20,16 @@ package com.github.aelstad.keccackj.core;
  * 
  */
 final class KeccackStateUtils {
-	
+		
 	public enum StateOp {
-		ZERO, GET, SET, XOR_IN, XOR_OUT_XOR_IN, SET_OUT_XOR_IN;
+		ZERO, GET, VALIDATE, XOR_IN, XOR_OUT, WRAP, UNWRAP;
 		
 		public boolean isIn() {
-			return (this == StateOp.SET || this ==StateOp.XOR_IN || this ==StateOp.XOR_OUT_XOR_IN || this == StateOp.SET_OUT_XOR_IN); 
+			return (this ==StateOp.XOR_IN || this ==StateOp.WRAP || this == StateOp.UNWRAP); 
 		}
 		
 		public boolean isOut() {
-			return (this == StateOp.GET || this==StateOp.XOR_OUT_XOR_IN || this == StateOp.SET_OUT_XOR_IN); 
+			return (this == StateOp.GET || this == XOR_OUT || this==StateOp.WRAP || this == StateOp.UNWRAP); 
 		}
 
 	};
@@ -44,21 +44,24 @@ final class KeccackStateUtils {
 		case GET:
 			rv = val;
 			break;
-		case SET:
-			state[pos] = in;
+		case XOR_OUT:
+			rv ^= val;
 			break;
 		case XOR_IN:
 			val = val ^ in;
 			state[pos] = val;
 			break;
-		case XOR_OUT_XOR_IN:
-			rv ^= val;
-			val = val ^ in;
+		case VALIDATE:
+			rv = in ^ val;
+			break;
+		case UNWRAP:
+			rv = in ^ val ;
+			val = val ^ rv;
 			state[pos] = val;
-		case SET_OUT_XOR_IN:
-			rv = val;
-			val = val ^ in;
-			state[pos] = val;			
+			break;
+		case WRAP:
+			rv = in ^ val;
+			state[pos] = rv;
 			break;
 		}
 		return rv;
@@ -81,20 +84,18 @@ final class KeccackStateUtils {
 		case GET:
 			rv = val;
 			break;
-		case SET:
-			lval ^= (val << shift);
-			lval |= (lin << shift);
-			state[lpos] = lval;
-			break;
+		case XOR_OUT:
+			rv ^= val;
+			break;			
 		case XOR_IN:
 			lval ^= (lin << shift);
 			state[lpos] = lval;
 			break;
-		case XOR_OUT_XOR_IN:
+		case WRAP:
 			rv ^= val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
-		case SET_OUT_XOR_IN:
+		case UNWRAP:
 			rv = val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
@@ -119,20 +120,18 @@ final class KeccackStateUtils {
 		case GET:
 			rv = val;
 			break;
-		case SET:
-			lval ^= (val << shift);
-			lval |= (lin << shift);
-			state[lpos] = lval;
+		case XOR_OUT:
+			rv ^= val;
 			break;
 		case XOR_IN:
 			lval ^= (lin << shift);
 			state[lpos] = lval;
 			break;
-		case XOR_OUT_XOR_IN:
+		case WRAP:
 			rv ^= val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
-		case SET_OUT_XOR_IN:
+		case UNWRAP:
 			rv = val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
@@ -157,20 +156,18 @@ final class KeccackStateUtils {
 		case GET:
 			rv = val;
 			break;
-		case SET:
-			lval ^= (val << shift);
-			lval |= (lin << shift);
-			state[lpos] = lval;
+		case XOR_OUT:
+			rv ^= val;
 			break;
 		case XOR_IN:
 			lval ^= (lin << shift);
 			state[lpos] = lval;
 			break;
-		case XOR_OUT_XOR_IN:
+		case WRAP:
 			rv ^= val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
-		case SET_OUT_XOR_IN:
+		case UNWRAP:
 			rv = val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
@@ -195,20 +192,18 @@ final class KeccackStateUtils {
 		case GET:
 			rv = val;
 			break;
-		case SET:
-			lval ^= (val << shift);
-			lval |= (lin << shift);
-			state[lpos] = lval;
+		case XOR_OUT:
+			rv ^= val;
 			break;
 		case XOR_IN:
 			lval ^= (lin << shift);
 			state[lpos] = lval;
 			break;
-		case XOR_OUT_XOR_IN:
+		case WRAP:
 			rv ^= val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
-		case SET_OUT_XOR_IN:
+		case UNWRAP:
 			rv = val;
 			lval ^= (lin << shift);
 			state[lpos] = lval;
@@ -218,8 +213,8 @@ final class KeccackStateUtils {
 				
 	public static void longsOp(StateOp stateOp, long[] state, int pos,
 			long[] out, int outpos, long[] in, int inpos, int len) {
-		boolean isOut = out != null && (stateOp == StateOp.GET || stateOp==StateOp.XOR_OUT_XOR_IN || stateOp== StateOp.SET_OUT_XOR_IN);
-		boolean isIn = in != null && (stateOp == StateOp.SET || stateOp==StateOp.XOR_IN || stateOp==StateOp.XOR_OUT_XOR_IN || stateOp== StateOp.SET_OUT_XOR_IN);			
+		boolean isOut = stateOp.isOut();
+		boolean isIn = stateOp.isIn();			
 		while (len > 0) {
 			long outvalue = isOut ? out[outpos] : 0;
 			long invalue = isIn ? in[inpos] : 0;
@@ -336,43 +331,94 @@ final class KeccackStateUtils {
 	public static void bitsOp(StateOp stateOp, long[] state, int pos,
 			byte[] out, long outpos, byte[] in, long inpos, int len) 
 	{
-
- 		boolean isOut = out != null && stateOp.isOut();
-		boolean isIn = in != null && stateOp.isIn();
-
+		long invalid=len;
 		while(len > 0) {
 			int bitoff = pos & 63;
-			int bitlen = Math.min(64 - bitoff, len);
+			int bitlen = Math.min(64 - bitoff, len);			
+
+			long tmp, mask;
+
+			long lin= 0;
+			long lout = 0;			
+			switch(stateOp) {
+			case GET:
+				setBitsFromLong(out, outpos, state[pos>>6], bitoff, bitlen);
+				outpos += bitlen;												
+				break;
+			case UNWRAP:
+				tmp = state[pos >>6];
+				lout = setBitsInLong(in, inpos, lin, bitoff, bitlen);
+				lout = lout ^ tmp;
+				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
+				
+				if(bitoff > 0 || bitlen < 64) {
+					// clear bits before xor
+					mask = ~(~0l << bitlen);
+					mask = mask << bitoff;
+					lout = lout & mask;
+				}
+				tmp ^= lout;
 			
-			if(stateOp == StateOp.ZERO && bitlen < 64) {
-				long mask = (~0l << bitoff) & (~0l >>> (64-bitlen-bitoff) );
-				long val = state[pos >> 6];
-				val ^= val & mask;
-				state[pos>>6] = val;
-				pos += bitlen;
-				len -= bitlen;
-				continue;
-			}
-
-			// if we don't replace all the bits -> fetch existing values
-			long lin= stateOp == StateOp.SET && bitlen < 64 ? state[pos >> 6] : 0;
-			long lout=0;
-
-			if(isIn) {
+				inpos += bitlen;
+				outpos += bitlen;			
+				state[pos>>6] = tmp;
+				break; 
+			case XOR_IN:
 				// set bits in lin 
 				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);
-				inpos+= bitlen;
-			}
-				
-			lout = longOp(stateOp, state, pos >> 6, lout, lin);
-			if(isOut) {
-				// set bits in out
+				state[pos>>6] ^= lin;
+				inpos += bitlen;				
+				break;
+			case XOR_OUT:
+				lout = setBitsInLong(out, outpos, lout, bitoff, bitlen);
+				lout = lout ^ state[pos>>6];
 				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
 				outpos += bitlen;
-			}					
+				break;
+			case WRAP:
+				tmp = state[pos>>6];
+				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);				
+				lout = lin = tmp ^ lin;
+				state[pos>>6] = lin;				
+				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
+				
+				inpos += bitlen;
+				outpos += bitlen;			
+				break;
+			case ZERO:
+				if(bitoff > 0 || bitlen < 64) {
+					mask = (~0l << bitoff) & (~0l >>> (64-bitlen-bitoff) );
+					long val = state[pos >> 6];
+					val ^= val & mask;
+					state[pos>>6] = val;					
+				} else {
+					state[pos>>6] = 0l;
+				}								
+				break;
+			case VALIDATE:				
+				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);
+				tmp = state[pos >> 6];
+				if(bitoff > 0 || bitlen < 64) {
+					// clear off bits 
+					mask = ~(~0l << bitlen);
+					mask = mask << bitoff;
+					tmp = tmp & mask;
+				}
+				inpos += bitlen;
+				if((tmp ^ lin)==0)
+					invalid -= bitlen;
+				else
+					invalid += bitlen;
+				
+				break;			
+			}
 			pos += bitlen;
+			bitoff += bitlen;
 			len -= bitlen;
-		}			
+		}
+		if(stateOp == StateOp.VALIDATE && invalid != 0) {
+			throw new KeccackStateValidationFailedException();
+		}
 	}
 	
 	static long setBitsInLong(byte[] src, long srcoff,  long l, int off, int len)

@@ -62,16 +62,6 @@ public class KeccackSponge {
 		}
 
 		@Override
-		public int read(byte[] b, int off, int len) {
-			return readBits(b, ((int)off)<<3, ((int)len)<<3)>>3;
-		}
-
-		@Override
-		public int read(byte[] b)  {
-			return this.read(b, 0, b.length);
-		}
-
-		@Override
 		public int readBits(byte[] bits, long bitOff, long bitLen) {
 			open();
 			
@@ -94,16 +84,6 @@ public class KeccackSponge {
 			
 			
 			return 0;
-		}
-
-		@Override
-		public int read() {
-			open();
-			
-			byte[] buf = new byte[1];
-			readBits(buf, 0, 8);
-			
-			return ((int) buf[0]) & 0xff;
 		}
 	}
 	
@@ -142,19 +122,6 @@ public class KeccackSponge {
 			}			
 		}
 		
-		@Override
-		public void write(byte[] b, int off, int len) {
-			writeBits(b, ((int)off)<<3, ((int)len)<<3);
-		}
-
-		
-
-		@Override
-		public void write(int b) {
-			writeBits(new byte[] { (byte) b }, 0, 8);
-			
-		}
-
 		public void open() {
 			if(closed) {
 				if(squeezeStream != null) {

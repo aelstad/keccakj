@@ -50,7 +50,7 @@ public class TestPermutation
 		
 		Keccack1600 keccack1600 = new Keccack1600(0);
 
-		keccack1600.setBytes(0, inBytes, 0, inBytes.length);
+		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
 		keccack1600.theta();
 				
@@ -65,7 +65,7 @@ public class TestPermutation
 		
 		Keccack1600 keccack1600 = new Keccack1600(0);
 
-		keccack1600.setBytes(0, inBytes, 0, inBytes.length);
+		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
 		keccack1600.pi();
 				
@@ -80,7 +80,7 @@ public class TestPermutation
 		
 		Keccack1600 keccack1600 = new Keccack1600(0);
 
-		keccack1600.setBytes(0, inBytes, 0, inBytes.length);
+		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
 		keccack1600.rho();
 				
@@ -95,7 +95,7 @@ public class TestPermutation
 		
 		Keccack1600 keccack1600 = new Keccack1600(0);
 
-		keccack1600.setBytes(0, inBytes, 0, inBytes.length);
+		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
 		keccack1600.chi();
 				
@@ -110,7 +110,7 @@ public class TestPermutation
 		
 		Keccack1600 keccack1600 = new Keccack1600(0);
 
-		keccack1600.setBytes(0, inBytes, 0, inBytes.length);
+		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
 		keccack1600.iota(round);
 				

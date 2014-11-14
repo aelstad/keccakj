@@ -20,15 +20,27 @@ import java.io.InputStream;
 public abstract class BitInputStream extends InputStream {		
 	@Override
 	public abstract void close();
+	
+	
+	@Override
+	public int read(byte[] b, int off, int len) {
+		return readBits(b, ((long)off)<<3, ((long)len)<<3);
+	}
 
 	@Override
-	public abstract int read();
+	public int read(byte[] b)  {
+		return this.read(b, 0, b.length);
+	}
+
 
 	@Override
-	public abstract int read(byte[] b, int off, int len);
+	public int read() {
+		byte[] buf = new byte[1];
+		readBits(buf, 0, 8);
+		
+		return ((int) buf[0]) & 0xff;		
+	}
 
-	@Override
-	public abstract int read(byte[] b);
 
 	public abstract int readBits(byte[] arg, long bitOff, long bitLen); 
 }

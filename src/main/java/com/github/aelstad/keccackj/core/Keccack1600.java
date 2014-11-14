@@ -24,8 +24,8 @@ import com.github.aelstad.keccackj.core.KeccackStateUtils.StateOp;
  * from https://github.com/gvanas/KeccakCodePackage
  *
  */
-public final class Keccack1600 {		
-
+public final class Keccack1600 {
+	
 	public Keccack1600()
 	{
 		this(256, 24);
@@ -69,16 +69,25 @@ public final class Keccack1600 {
 		KeccackStateUtils.bitsOp(stateOp, state, stateBitOff, out, outpos, in, inpos, lenBits);		
 	}
 	
+
+	public void validateBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
+		bytesOp(StateOp.VALIDATE, stateByteOff, null, 0, buf, bufByteOff, lenBytes);
+	}
+	
+	public void wrapBytes(int stateByteOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBytes)  {
+		bytesOp(StateOp.WRAP, stateByteOff, outBuf, outBufOff, inBuf, inBufOff, lenBytes);
+	}
+	
+	public void unwrapBytes(int stateByteOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBytes) {
+		bytesOp(StateOp.UNWRAP, stateByteOff, outBuf, outBufOff, inBuf, inBufOff, lenBytes);
+	}
+
 	
 	public void getBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
 		bytesOp(StateOp.GET, stateByteOff, buf, bufByteOff, null, 0, lenBytes);
 	}
 	
-	
-	public void setBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
-		bytesOp(StateOp.SET, stateByteOff, null, 0, buf, bufByteOff, lenBytes);
-	}
-	
+		
 	public void setXorByte(int stateByteOff, byte val) {
 		byteOp(StateOp.XOR_IN, stateByteOff, (byte) 0, val);
 	}
@@ -98,20 +107,26 @@ public final class Keccack1600 {
 		bitsOp(StateOp.GET, stateBitOff, buf, bufBitOff, null, 0, lenBits);		
 	}
 	
-	public final void setBits(int stateBitOff, byte[] buf, long bufBitOff, int lenBits) {
-		bitsOp(StateOp.SET, stateBitOff, null, 0, buf, bufBitOff, lenBits);
-	}
-	
 	public final void setXorBits(int stateBitOff, byte[] buf, long bufBitOff, int lenBits) {
 		bitsOp(StateOp.XOR_IN, stateBitOff, null, 0, buf, bufBitOff, lenBits);
 	}
-	
-	
+		
 	public void zeroBits(int stateBitOff, int lenBits) {
 		bitsOp(StateOp.ZERO, stateBitOff, null, 0, null, 0, lenBits);
 	}
-				
 	
+	public void validateBits(int stateBitOff, byte[] buf, int bufBitOff, int lenBits) {
+		bitsOp(StateOp.VALIDATE, stateBitOff, null, 0, buf, bufBitOff, lenBits);
+	}
+	
+	public void wrapBits(int stateBitOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBits)  {
+		bitsOp(StateOp.WRAP, stateBitOff, outBuf, outBufOff, inBuf, inBufOff, lenBits);
+	}
+	
+	public void unwrapBits(int stateBitOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBits) {
+		bitsOp(StateOp.UNWRAP, stateBitOff, outBuf, outBufOff, inBuf, inBufOff, lenBits);
+	}
+
 	public int remainingLongs(int longOff) {
 		return remainingBits(longOff << 6) >> 6;
 	}
