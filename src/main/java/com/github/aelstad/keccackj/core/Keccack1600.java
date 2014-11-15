@@ -44,12 +44,12 @@ public final class Keccack1600 {
 		clear();
 	}
 	
-	byte byteOp(StateOp stateOp, int stateByteOff, byte out, byte in)
+	byte byteOp(StateOp stateOp, int stateByteOff, byte in)
 	{
 		if(stateByteOff >= rateBytes)
 			throw new IndexOutOfBoundsException();
 		
-		return KeccackStateUtils.byteOp(stateOp, state, stateByteOff, out, in); 		
+		return KeccackStateUtils.byteOp(stateOp, state, stateByteOff, in); 		
 	}
 	
 	
@@ -89,7 +89,7 @@ public final class Keccack1600 {
 	
 		
 	public void setXorByte(int stateByteOff, byte val) {
-		byteOp(StateOp.XOR_IN, stateByteOff, (byte) 0, val);
+		byteOp(StateOp.XOR_IN, stateByteOff, val);
 	}
 
 	
@@ -152,13 +152,13 @@ public final class Keccack1600 {
 			padBitPosition=0;
 		}
 		
-		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, padBitPosition, true, true);		
+		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, padBitPosition, true);		
 		
 		if(len == 1) {
 			permute();
 		} 			
 		
-		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true, true);
+		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
 	}
 			
 	public void permute()

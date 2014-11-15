@@ -39,7 +39,7 @@ public class TestKeccackStateUtils {
 			for(int j=0; j < 2; ++j) {
 				long expected = ~0l ^ (0xffffffffl << j*32);
 				long[] state = getState();				
-				KeccackStateUtils.intOp(StateOp.ZERO, state, 2*i+j, 0, 0);
+				KeccackStateUtils.intOp(StateOp.ZERO, state, 2*i+j, 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
@@ -52,7 +52,7 @@ public class TestKeccackStateUtils {
 			for(int j=0; j < 4; ++j) {
 				long expected = ~0l ^ (0xffffl << j*16);
 				long[] state = getState();				
-				KeccackStateUtils.shortOp(StateOp.ZERO, state, 4*i+j, (short) 0, (short) 0);
+				KeccackStateUtils.shortOp(StateOp.ZERO, state, 4*i+j, (short) 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
@@ -66,7 +66,7 @@ public class TestKeccackStateUtils {
 			for(int j=0; j < 8; ++j) {
 				long expected = ~0l ^ (0xffl << j*8);
 				long[] state = getState();				
-				KeccackStateUtils.byteOp(StateOp.ZERO, state, 8*i+j, (byte) 0, (byte) 0);
+				KeccackStateUtils.byteOp(StateOp.ZERO, state, 8*i+j, (byte) 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
@@ -79,7 +79,7 @@ public class TestKeccackStateUtils {
 			for(int j=0; j < 64; ++j) {
 				long expected = ~0l ^ (1l << j);
 				long[] state = getState();				
-				KeccackStateUtils.bitOp(StateOp.ZERO, state, 64*i+j, false, true);
+				KeccackStateUtils.bitOp(StateOp.ZERO, state, 64*i+j, false);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}

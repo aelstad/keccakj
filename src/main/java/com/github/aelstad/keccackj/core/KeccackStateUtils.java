@@ -15,6 +15,7 @@
  */
 package com.github.aelstad.keccackj.core;
 
+
 /**
  * Contains methods to manipulate Keccack 64-bit longs state using various-length primitvies
  * 
@@ -25,7 +26,7 @@ final class KeccackStateUtils {
 		ZERO, GET, VALIDATE, XOR_IN, XOR_OUT, WRAP, UNWRAP;
 		
 		public boolean isIn() {
-			return (this ==StateOp.XOR_IN || this ==StateOp.WRAP || this == StateOp.UNWRAP); 
+			return (this ==StateOp.XOR_IN || this ==StateOp.WRAP || this == StateOp.UNWRAP || this == VALIDATE); 
 		}
 		
 		public boolean isOut() {
@@ -33,199 +34,108 @@ final class KeccackStateUtils {
 		}
 
 	};
+	
+	public static long longOp(StateOp stateOp, long[] state, int pos, long val, int bitoff, int bitlen) {
+		long mask;
+		if(bitlen < 64) {
+			mask = ~(~0l << bitlen);
+			mask = mask << bitoff;
+		} else {
+			mask = ~0l;
+		}
 		
-	public static long longOp(StateOp stateOp, long[] state, int pos, long out, long in) {
-		long rv=out;
-		long val = state[pos];
+		long rv = 0;
+		long stateval = state[pos];
 		switch (stateOp) {
 		case ZERO:
-			state[pos] = val^val;
+			state[pos] = stateval^(stateval&mask);
 			break;
 		case GET:
-			rv = val;
+			rv = stateval & mask;
 			break;
 		case XOR_OUT:
-			rv ^= val;
+			rv = (val ^ stateval) & mask;
 			break;
 		case XOR_IN:
-			val = val ^ in;
-			state[pos] = val;
+			stateval = stateval ^ (val & mask);
+			state[pos] = stateval;
 			break;
 		case VALIDATE:
-			rv = in ^ val;
+			rv = (val ^ stateval) & mask;
 			break;
 		case UNWRAP:
-			rv = in ^ val ;
-			val = val ^ rv;
-			state[pos] = val;
+			rv = (val ^ stateval) & mask;
+			stateval = stateval ^ rv;
+			state[pos] = stateval;
 			break;
 		case WRAP:
-			rv = in ^ val;
-			state[pos] = rv;
+			rv = (val ^ stateval) & mask;
+			stateval = stateval ^ (val & mask);
+			state[pos] = stateval;
 			break;
 		}
 		return rv;
 	}
-	
-	public static int intOp(StateOp stateOp, long[] state, int pos, int out, int in) {
-		long rv=out;
-				
-		long mask = 0x00000000ffffffffl;
-		int shift = (pos & 1)<<5;
-		int lpos = pos >> 1; 
-		long lval = state[lpos];	
-		long lin = in;
-		long val = (lval >>> shift) & mask;
-		switch (stateOp) {
-		case ZERO:
-			lval ^= (val << shift);
-			state[lpos] = lval;
-			break;
-		case GET:
-			rv = val;
-			break;
-		case XOR_OUT:
-			rv ^= val;
-			break;			
-		case XOR_IN:
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-			break;
-		case WRAP:
-			rv ^= val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		case UNWRAP:
-			rv = val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		}
-		return (int) rv;
+
+		
+	public static long longOp(StateOp stateOp, long[] state, int pos, long val) {
+		return longOp(stateOp, state, pos, val, 0, 64);
 	}
 	
-	public static short shortOp(StateOp stateOp, long[] state, int pos, short out, short in) {
-		long rv=out;
+	public static int intOp(StateOp stateOp, long[] state, int pos, int val) {
+		int lpos = pos >> 1;
+		int bitoff = (pos & 1) << 5;
 		
-		long mask = 0x000000000000ffffl;
-		int shift = (pos & 3)<<4;
-		int lpos = pos >> 2; 
-		long lval = state[lpos];	
-		long lin = in;
-		long val = (lval >>> shift) & mask;
-		switch (stateOp) {
-		case ZERO:
-			lval ^= (val << shift);
-			state[lpos] = lval;
-			break;
-		case GET:
-			rv = val;
-			break;
-		case XOR_OUT:
-			rv ^= val;
-			break;
-		case XOR_IN:
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-			break;
-		case WRAP:
-			rv ^= val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		case UNWRAP:
-			rv = val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		}
-		return (short) rv;
+		return (int) ((longOp(stateOp, state, lpos, ((long)val)<<bitoff, bitoff, 32) >>> bitoff) & 0xffffffffl);  		
 	}
 	
-	public static byte byteOp(StateOp stateOp, long[] state, int pos, byte out, byte in) {
-		long rv=out;
+	public static short shortOp(StateOp stateOp, long[] state, int pos, short val) {
+		int lpos = pos >> 2;
+		int bitoff = (pos & 3) << 4;
 		
-		long mask = 0x00000000000000ffl;
-		int shift = (pos & 7)<<3;
-		int lpos = pos >> 3; 
-		long lval = state[lpos];	
-		long lin = in;
-		long val = (lval >>> shift) & mask;
-		switch (stateOp) {
-		case ZERO:
-			lval ^= (val << shift);
-			state[lpos] = lval;
-			break;
-		case GET:
-			rv = val;
-			break;
-		case XOR_OUT:
-			rv ^= val;
-			break;
-		case XOR_IN:
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-			break;
-		case WRAP:
-			rv ^= val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		case UNWRAP:
-			rv = val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		}
-		return (byte) rv;
+		return (short) ((longOp(stateOp, state, lpos, ((long)val)<<bitoff, bitoff, 16) >>> bitoff) & 0xffffl);  		
 	}
 	
-	public static boolean bitOp(StateOp stateOp, long[] state, int pos, boolean bitOut, boolean bitIn) {
-		long rv=bitOut ? 1 : 0;
+	public static byte byteOp(StateOp stateOp, long[] state, int pos, byte val) {
+		int lpos = pos >> 3;
+		int bitoff = (pos & 7) << 3;
 		
-		long mask = 1l;
-		int shift = (pos & 63);
-		int lpos = pos >> 6; 
-		long lval = state[lpos];	
-		long lin = bitIn==true ? 1 : 0;
-		long val = (lval >>> shift) & mask;
-		switch (stateOp) {
-		case ZERO:
-			lval ^= (val << shift);
-			state[lpos] = lval;
-			break;
-		case GET:
-			rv = val;
-			break;
-		case XOR_OUT:
-			rv ^= val;
-			break;
-		case XOR_IN:
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-			break;
-		case WRAP:
-			rv ^= val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		case UNWRAP:
-			rv = val;
-			lval ^= (lin << shift);
-			state[lpos] = lval;
-		}
-		return rv==1;
+		return (byte) ((longOp(stateOp, state, lpos, ((long)val)<<bitoff, bitoff, 8) >>> bitoff) & 0xffl);  		
+	}
+	
+	public static boolean bitOp(StateOp stateOp, long[] state, int pos, boolean val) {
+		int lpos = pos >> 6;
+		int bitoff = (pos & 63);
+		
+		return ((longOp(stateOp, state, lpos, (val ? 1l : 0l)<<bitoff, bitoff, 1) >>> bitoff) & 1l)==1l;  		
 	}
 				
 	public static void longsOp(StateOp stateOp, long[] state, int pos,
 			long[] out, int outpos, long[] in, int inpos, int len) {
+		
+		long invalid=0;
+		boolean isIn = stateOp.isIn();
 		boolean isOut = stateOp.isOut();
-		boolean isIn = stateOp.isIn();			
-		while (len > 0) {
-			long outvalue = isOut ? out[outpos] : 0;
-			long invalue = isIn ? in[inpos] : 0;
-			outvalue = longOp(stateOp, state, pos, outvalue, invalue); 
-			if(isOut) {
-				out[outpos] = outvalue;
+		while(len > 0) {
+			long tmp = 0;
+		
+			if(isIn) {
+				tmp = in[inpos];
+				inpos++;
+			}
+			tmp = longOp(stateOp, state, pos, tmp);
+			if(isOut) {				
+				out[outpos] = tmp;
+				outpos++;
+			}
+			if(stateOp == StateOp.VALIDATE) {
+				invalid |= tmp;
 			}
 			pos++;
-			inpos++;
-			outpos++;
-			--len;
+			len--;
+		}
+		if(stateOp == StateOp.VALIDATE && invalid != 0) {
+			throw new KeccackStateValidationFailedException();
 		}
 	}
 	
@@ -233,184 +143,262 @@ final class KeccackStateUtils {
 	public static void intsOp(StateOp stateOp, long[] state, int pos,
 			int [] out, int outpos, int[] in, int inpos, int len)
 	{
-		boolean isOut = out != null && stateOp.isOut();
-		boolean isIn = in != null && stateOp.isIn();
-
-		while(len > 0)
-		{
-			if((pos & 7) == 0 && len >= 2) {
+		long invalid=0;
+		boolean isIn = stateOp.isIn();
+		boolean isOut = stateOp.isOut();
+		while(len > 0) {
+			if(len > 1 & (pos & 1)==0) {
+				long mask = 0xffffffffl;
 				do {
-					
-					long lin=0;
-					long lout=0;
-					
-					for(int i=0; isIn && i < 2; ++i ){
-						lin  |= ((long) in[inpos]) << (i<<5); 
-						lout >>>= 16;
+					long tmp = 0;
+					if(isIn) {
+						tmp = ((long) in[inpos]) & mask;
 						++inpos;
-					}										
-					
-					lout = longOp(stateOp, state, inpos, lout, lin);
-					
-					for(int i=0; isOut && i < 2; ++i ){
-						out[outpos] = (int) (lout & 0xffffffff);
-						lout >>>= 16;
+						tmp |= (((long) in[inpos]) & mask)<<32;
+						++inpos;
+					}
+					tmp = longOp(stateOp, state, pos>>1, tmp);
+					if(isOut) {
+						out[outpos] = (int) (tmp & mask);
 						++outpos;
+						tmp >>>= 32;
+						out[outpos] = (int) (tmp & mask);
+						++outpos;
+					}
+					if(stateOp == StateOp.VALIDATE) {
+						invalid |= tmp;
 					}					
-				} while(len >= 2);
-			} 
-			if(len > 0) {
-				int sin= isIn ? in[inpos] : 0;
-				int sout = isOut ? out[outpos] : 0;
+					pos += 2;
+					len -= 2;
+				} while(len > 1);
+			} else {			
+				int tmp = 0;
+		
 				if(isIn) {
-					++inpos;
+					tmp = in[inpos];
+					inpos++;
 				}
-				
-				sout = intOp(stateOp, state, pos, sout, sin);
-				if(isOut) {
-					out[outpos] = sout;
-					++outpos;
+				tmp = intOp(stateOp, state, pos, tmp);
+				if(isOut) {				
+					out[outpos] = tmp;
+					outpos++;
 				}
+				if(stateOp == StateOp.VALIDATE) {
+					invalid |= tmp;
+				}
+				pos++;
+				len--;
 			}
-		}		
+		}
+		if(stateOp == StateOp.VALIDATE && invalid != 0) {
+			throw new KeccackStateValidationFailedException();
+		}
 	}
 
 
 	public static void shortsOp(StateOp stateOp, long[] state, int pos,
 			short[] out, int outpos, short[] in, int inpos, int len)
 	{
-		boolean isOut = out != null && stateOp.isOut();
-		boolean isIn = in != null && stateOp.isIn();
-
-		while(len > 0)
-		{
-			if((pos & 3) == 0 && len >= 4) {
-				do {					
-					long lin=0;
-					long lout=0;
-					
-					for(int i=0; isIn && i < 4; ++i ){
-						lin  |= ((long) in[inpos]) << (i<<4); 
-						lout >>>= 16;
+		long invalid=0;
+		boolean isIn = stateOp.isIn();
+		boolean isOut = stateOp.isOut();
+		while(len > 0) {
+			if(len > 3 && (pos&3)==0) {
+				long mask = 0xffffl;
+				do {
+					long tmp = 0;
+					if(isIn) {
+						tmp = ((long) in[inpos]) & mask;
 						++inpos;
-					}										
-					
-					lout = longOp(stateOp, state, inpos, lout, lin);
-					
-					for(int i=0; isOut && i < 4; ++i ){
-						out[outpos] = (short) (lout & 0xffff);
-						lout >>>= 16;
+						tmp |= (((long) in[inpos]) & mask)<<16;
+						++inpos;
+						tmp |= (((long) in[inpos]) & mask)<<32;
+						++inpos;
+						tmp |= (((long) in[inpos]) & mask)<<48;
+						++inpos;						
+						
+					}
+					tmp = longOp(stateOp, state, pos>>2, tmp);
+					if(isOut) {
+						out[outpos] = (short) (tmp & mask);
 						++outpos;
+						tmp >>>= 16;
+						out[outpos] = (short) (tmp & mask);
+						++outpos;
+						tmp >>>= 16;
+						out[outpos] = (short) (tmp & mask);
+						++outpos;
+						tmp >>>= 16;
+						out[outpos] = (short) (tmp & mask);
+						++outpos;														
+					}
+					if(stateOp == StateOp.VALIDATE) {
+						invalid |= tmp;
 					}					
-				} while(len >= 4);
-			} 
-			if(len > 0) {
-				short sin= isIn ? in[inpos] : 0;
-				short sout = isOut ? out[outpos] : 0;
+					pos += 4;
+					len -= 4;					
+				} while(len > 3);
+			} else {
+				short tmp = 0;
+		
 				if(isIn) {
-					++inpos;
+					tmp = in[inpos];
+					inpos++;
 				}
-				
-				sout = shortOp(stateOp, state, pos, sout, sin);
-				if(isOut) {
-					out[outpos] = sout;
-					++outpos;
+				tmp = shortOp(stateOp, state, pos, tmp);
+				if(isOut) {				
+					out[outpos] = tmp;
+					outpos++;
 				}
-			}
+				if(stateOp == StateOp.VALIDATE) {
+					invalid |= tmp;
+				}
+				pos++;
+				len--;
+			}		
 		}
+		if(stateOp == StateOp.VALIDATE && invalid != 0) {
+			throw new KeccackStateValidationFailedException();
+		}		
 	}
 
 
 	public static void bytesOp(StateOp stateOp, long[] state, int pos,
 			byte[] out, int outpos, byte[] in, int inpos, int len)
 	{			
-		bitsOp(stateOp, state, pos<<3, out, ((long) outpos)<<3, in, ((long)inpos)<<3, len <<3);
+		if(len > 7 && (len&7)==0 && (pos&7)==0) {
+			long invalid = 0;
+			boolean isIn = stateOp.isIn();
+			boolean isOut = stateOp.isOut();
+			long mask = 0xff;
+			do {
+				long tmp = 0;
+				if(isIn) {
+					tmp = ((long) in[inpos]) & mask;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<8;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<16;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<24;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<32;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<40;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<48;
+					++inpos;
+					tmp |= (((long) in[inpos]) & mask)<<56;
+					++inpos;														
+				}
+				tmp = longOp(stateOp, state, pos>>3, tmp);
+				if(isOut) {
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+					tmp >>>= 8;
+					out[outpos] = (byte) (tmp & mask);
+					++outpos;
+				}
+				if(stateOp == StateOp.VALIDATE) {
+					invalid |= tmp;
+				}					
+				
+				pos += 8;
+				len -= 8;
+			} while(len > 0);
+			if(stateOp == StateOp.VALIDATE && invalid != 0) {
+				throw new KeccackStateValidationFailedException();
+			}					
+		} else {
+			bitsOp(stateOp, state, pos<<3, out, ((long) outpos)<<3, in, ((long)inpos)<<3, len <<3);
+		}
 	}
 
+	public static byte bitsOp(StateOp stateOp, long[] state, int pos, byte in, int len)
+	{
+		boolean isIn = stateOp.isIn();
+		boolean isOut = stateOp.isOut();
+		byte rv=0;
+		
+		int lpos = (pos>>6);
+		int loff = (pos & 63);
+		
+		
+		int len1 = Math.min(len, 64-loff);
+		int len2 = len - len1;
+		long mask1 = ((~(0xff<<len1))&0xffl);
+		long mask2 = ((~(0xff<<len2))&0xffl);
+		
+		long tmp = 0;
+		if(isIn) {
+			tmp = ((long) in) & mask1;
+			tmp <<= loff;			
+		}
+		tmp = longOp(stateOp, state, lpos, tmp, loff, len1);
+		if(isOut) {
+			tmp >>= loff;
+			rv = (byte) (tmp & mask1);
+		}
+		
+		if(len2 > 0) {
+			++lpos;
+			loff = 0;
 
+			if(isIn) {
+				tmp = ((long) (in>>>len1)) & mask2;
+			}
+			tmp = longOp(stateOp, state, lpos, tmp, loff, len2);
+			if(isOut) {
+				rv |= ((byte) (tmp & mask2))<<len1;
+			}
+		}
+		
+		return rv;
+	}
+
+	
 	public static void bitsOp(StateOp stateOp, long[] state, int pos,
 			byte[] out, long outpos, byte[] in, long inpos, int len) 
 	{
-		long invalid=len;
+		long invalid=0;
+		boolean isIn = stateOp.isIn();
+		boolean isOut = stateOp.isOut();
 		while(len > 0) {
 			int bitoff = pos & 63;
 			int bitlen = Math.min(64 - bitoff, len);			
-
-			long tmp, mask;
-
-			long lin= 0;
-			long lout = 0;			
-			switch(stateOp) {
-			case GET:
-				setBitsFromLong(out, outpos, state[pos>>6], bitoff, bitlen);
-				outpos += bitlen;												
-				break;
-			case UNWRAP:
-				tmp = state[pos >>6];
-				lout = setBitsInLong(in, inpos, lin, bitoff, bitlen);
-				lout = lout ^ tmp;
-				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
-				
-				if(bitoff > 0 || bitlen < 64) {
-					// clear bits before xor
-					mask = ~(~0l << bitlen);
-					mask = mask << bitoff;
-					lout = lout & mask;
-				}
-				tmp ^= lout;
 			
+			long tmp = 0;
+			int lpos = pos >> 6;
+		
+			if(isIn) {
+				tmp = setBitsInLong(in, inpos, tmp, bitoff, bitlen);
 				inpos += bitlen;
-				outpos += bitlen;			
-				state[pos>>6] = tmp;
-				break; 
-			case XOR_IN:
-				// set bits in lin 
-				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);
-				state[pos>>6] ^= lin;
-				inpos += bitlen;				
-				break;
-			case XOR_OUT:
-				lout = setBitsInLong(out, outpos, lout, bitoff, bitlen);
-				lout = lout ^ state[pos>>6];
-				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
+			}
+			tmp = longOp(stateOp, state, lpos, tmp, bitoff, bitlen);
+			if(isOut) {
+				setBitsFromLong(out, outpos, tmp, bitoff, bitlen);
 				outpos += bitlen;
-				break;
-			case WRAP:
-				tmp = state[pos>>6];
-				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);				
-				lout = lin = tmp ^ lin;
-				state[pos>>6] = lin;				
-				setBitsFromLong(out, outpos, lout, bitoff, bitlen);
-				
-				inpos += bitlen;
-				outpos += bitlen;			
-				break;
-			case ZERO:
-				if(bitoff > 0 || bitlen < 64) {
-					mask = (~0l << bitoff) & (~0l >>> (64-bitlen-bitoff) );
-					long val = state[pos >> 6];
-					val ^= val & mask;
-					state[pos>>6] = val;					
-				} else {
-					state[pos>>6] = 0l;
-				}								
-				break;
-			case VALIDATE:				
-				lin = setBitsInLong(in, inpos, lin, bitoff, bitlen);
-				tmp = state[pos >> 6];
-				if(bitoff > 0 || bitlen < 64) {
-					// clear off bits 
-					mask = ~(~0l << bitlen);
-					mask = mask << bitoff;
-					tmp = tmp & mask;
-				}
-				inpos += bitlen;
-				if((tmp ^ lin)==0)
-					invalid -= bitlen;
-				else
-					invalid += bitlen;
-				
-				break;			
+			}
+			if(stateOp == StateOp.VALIDATE) {
+				invalid |= tmp;
 			}
 			pos += bitlen;
 			bitoff += bitlen;
