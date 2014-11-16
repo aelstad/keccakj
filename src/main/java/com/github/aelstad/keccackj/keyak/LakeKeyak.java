@@ -8,10 +8,10 @@ public final class LakeKeyak {
 	private int pos;
 	private Keccack1600 keccack1600;
 	
-	private static final byte[] HEADER_MORE = new byte[] { 0 };
-	private static final byte[] TAG_NEXT = new byte[] { 1 };
-	private static final byte[] BODY_NEXT= new byte[] { 2 };
-	private static final byte[] BODY_MORE = new byte[] { 3 };
+	private static final byte HEADER_MORE = 0;
+	private static final byte TAG_NEXT = 1;
+	private static final byte BODY_NEXT = 2;
+	private static final byte BODY_MORE =  3;
 	
 	public LakeKeyak() {
 		this.keccack1600 = new Keccack1600(252, 12);
@@ -50,8 +50,7 @@ public final class LakeKeyak {
 		while(len > 0) {
 			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
 			if(remainingBytes == 0) {				
-				keccack1600.setXorBits(pos<<3, HEADER_MORE, 0l, 2);
-				keccack1600.pad((pos<<3) + 2);
+				keccack1600.pad(HEADER_MORE, 2, pos<<3);
 				keccack1600.permute();
 				pos = 0;
 				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
@@ -67,8 +66,7 @@ public final class LakeKeyak {
 	}
 			
 	public void endHeader(boolean hasBody) {
-		keccack1600.setXorBits(pos<<3, hasBody ? BODY_NEXT : TAG_NEXT, 0l, 2);
-		keccack1600.pad((pos<<3) + 2);
+		keccack1600.pad(hasBody ? BODY_NEXT : TAG_NEXT, 2, pos<<3);
 		
 		keccack1600.permute();
 		pos = 0;
@@ -78,8 +76,7 @@ public final class LakeKeyak {
 		while(len > 0) {
 			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
 			if(remainingBytes == 0) {				
-				keccack1600.setXorBits(pos<<3, BODY_MORE, 0l, 2);
-				keccack1600.pad((pos<<3) + 2);
+				keccack1600.pad(BODY_MORE, 2, pos << 3);
 				keccack1600.permute();
 				pos = 0;
 				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
@@ -97,9 +94,8 @@ public final class LakeKeyak {
 	public void bodyUnwrap(byte[] in, int inoff, byte[] out, int outoff, int len) {
 		while(len > 0) {
 			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
-			if(remainingBytes == 0) {				
-				keccack1600.setXorBits(pos<<3, BODY_MORE, 0l, 2);
-				keccack1600.pad((pos<<3) + 2);
+			if(remainingBytes == 0) {
+				keccack1600.pad(BODY_MORE, 2, pos << 3);
 				keccack1600.permute();
 				pos = 0;
 				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
@@ -116,8 +112,7 @@ public final class LakeKeyak {
 	
 	
 	public void endBody() {
-		keccack1600.setXorBits(pos<<3, TAG_NEXT, 0l, 2);
-		keccack1600.pad((pos<<3) + 2);
+		keccack1600.pad(TAG_NEXT, 2, pos<<3);
 		keccack1600.permute();
 		pos = 0;		
 	}

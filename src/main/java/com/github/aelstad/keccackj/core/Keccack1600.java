@@ -140,6 +140,49 @@ public final class Keccack1600 {
 		return rateBits - bitOff;
 	}
 	
+	
+	public void pad(byte domainBits, int domainBitLength, int bitPosition) 
+	{
+		int len = rateBits - bitPosition;
+		
+		if(len < 0 || domainBitLength>=7)
+			throw new IndexOutOfBoundsException();
+		
+		// add bits for multirate padding
+		domainBits |= (1 << domainBitLength);
+		++domainBitLength;
+		
+		boolean multirateComplete  = false;
+		// no zeros in multirate padding. add final bit.
+		if(len==domainBitLength+1) {
+			domainBits |= (1 << domainBitLength);
+			++domainBitLength;			
+			multirateComplete = true;
+		}
+		
+		while(domainBitLength > 0) {
+			int chunk = Math.min(len, domainBitLength);
+			if(chunk == 0) {
+				permute();
+				len = rateBits;
+				bitPosition = 0;
+				continue;
+			}
+			KeccackStateUtils.bitsOp(StateOp.XOR_IN, state, bitPosition, domainBits, chunk);
+			
+			len -= chunk;
+			domainBits >>= chunk;
+			domainBitLength -= chunk;
+			bitPosition += chunk;
+		}
+		if(!multirateComplete) {
+			if(len == 0) {
+				permute();				
+			}
+			KeccackStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
+		}
+	}	
+	
 	public void pad(int padBitPosition) 
 	{
 		int len = rateBits - padBitPosition;
