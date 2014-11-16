@@ -74,8 +74,11 @@ public class KeccackSponge {
 				}
 				int chunk = (int) Math.min(bitLen, remainingBits);
 				
-				
-				keccack1600.getBits(ratePos, bits, bitOff, chunk);
+				if((ratePos & 7)==0 && (bitOff&7)==0 && (chunk&7)==0) {
+					keccack1600.getBytes(ratePos>>3, bits, (int) (bitOff>>3), chunk>>3);
+				} else {
+					keccack1600.getBits(ratePos, bits, bitOff, chunk);
+				}
 				
 				ratePos += chunk;
 				bitLen -= chunk;		
@@ -113,8 +116,11 @@ public class KeccackSponge {
 				}
 				int chunk = (int) Math.min(bitLen, remainingBits);
 				
-				
-				keccack1600.setXorBits(ratePos, bits, bitOff, chunk);
+				if((ratePos & 7)==0 && (bitOff&7)==0 && (chunk&7)==0) {
+					keccack1600.setXorBytes(ratePos>>3, bits, (int) (bitOff>>3), chunk>>3);
+				} else {
+					keccack1600.setXorBits(ratePos, bits, bitOff, chunk);
+				}
 				
 				ratePos += chunk;
 				bitLen -= chunk;		
@@ -134,7 +140,6 @@ public class KeccackSponge {
 			}							
 			
 		}
-
 	}
 	
 	
