@@ -28,7 +28,7 @@ public class KeccackSponge {
 	Keccack1600 keccack1600;
 	
 	int domainPaddingBitLength;
-	byte[] domainPadding;
+	byte domainPadding;
 	
 	private int ratePos;
 	
@@ -96,8 +96,7 @@ public class KeccackSponge {
 		@Override
 		public void close() {
 			if(!closed){
-				writeBits(domainPadding, 0, domainPaddingBitLength);
-				keccack1600.pad(ratePos);
+				keccack1600.pad(domainPadding, domainPaddingBitLength, ratePos);
 				keccack1600.permute();
 				closed = true;
 				ratePos = 0;
@@ -144,7 +143,7 @@ public class KeccackSponge {
 	
 	
 	
-	public KeccackSponge(int capacityInBits, byte[] domainPadding, int domainPaddingBitLength) {
+	public KeccackSponge(int capacityInBits, byte domainPadding, int domainPaddingBitLength) {
 		this.keccack1600 = new Keccack1600(capacityInBits);
 		this.domainPadding = domainPadding;
 		this.domainPaddingBitLength = domainPaddingBitLength;

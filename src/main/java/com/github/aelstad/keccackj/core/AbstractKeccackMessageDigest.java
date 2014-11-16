@@ -35,7 +35,7 @@ public abstract class AbstractKeccackMessageDigest extends MessageDigest {
 	 * @param domainPadding 
 	 * @param domainPaddingBits 
 	 */
-	public AbstractKeccackMessageDigest(String algorithm, int capacityInBits, int digestLength, byte[] domainPadding, int domainPaddingBitLength)
+	public AbstractKeccackMessageDigest(String algorithm, int capacityInBits, int digestLength, byte domainPadding, int domainPaddingBitLength)
 	{
 		super(algorithm);
 		this.keccackSponge = new KeccackSponge(capacityInBits, domainPadding, domainPaddingBitLength);

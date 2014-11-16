@@ -66,11 +66,11 @@ public class TestStreamEncryption {
 			fos.close();
 			byte[] decrypted = bos.toByteArray();
 			Assert.assertTrue(data != decrypted);
-			Assert.assertTrue(Arrays.equals(decrypted, data));
-									
-			
-			System.out.println("Encryption OK of "+i);
+			Assert.assertTrue(Arrays.equals(decrypted, data));									
 		}
+		
+		System.out.println("Encryption OK");
+
 		
 	}
 }

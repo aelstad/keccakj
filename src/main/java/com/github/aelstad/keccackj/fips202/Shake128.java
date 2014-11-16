@@ -18,7 +18,7 @@ package com.github.aelstad.keccackj.fips202;
 import com.github.aelstad.keccackj.core.KeccackSponge;
 
 public final class Shake128 extends KeccackSponge {
-	private final static byte[] DOMAIN_PADDING = new byte[] {0xf};
+	private final static byte DOMAIN_PADDING = 0xf;
 	private final static int DOMMAIN_PADDING_LENGTH = 4;
 	
 	public Shake128() {

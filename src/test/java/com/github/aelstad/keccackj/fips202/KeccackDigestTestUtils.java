@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Assert;
 import org.apache.commons.codec.binary.Hex;
@@ -88,6 +89,8 @@ public class KeccackDigestTestUtils {
 			Assert.assertTrue(digestLength == md.length);;
 			org.junit.Assert.assertTrue(Arrays.equals(md, dt.digest));			
 		}
+		
+		testPerformance(messageDigest);
 	}
 	
 	public void runTests(List<DigestTest> tests, KeccackSponge sponge)
@@ -103,5 +106,26 @@ public class KeccackDigestTestUtils {
 			Assert.assertTrue(rv.length == dt.digest.length);;
 			org.junit.Assert.assertTrue(Arrays.equals(rv, dt.digest));			
 		}		
+	}
+	
+	
+	public void testPerformance(AbstractKeccackMessageDigest messageDigest)
+	{
+		int rounds = 128;
+		byte[] buf = new byte[2*1024*1024];
+		Random random = new Random();
+		random.nextBytes(buf);
+		long startTs;
+		long stopTs;
+		long digestTime=0;
+		byte[] digest = messageDigest.digest(buf);
+		for(int i=0; i < rounds; ++i) {
+			System.arraycopy(digest, 0, buf, 0, digest.length);
+			startTs = System.currentTimeMillis();
+			digest = messageDigest.digest(buf);
+			stopTs = System.currentTimeMillis();
+			digestTime += (stopTs-startTs);
+		}
+		System.out.println("Performance of "+ messageDigest.getAlgorithm() + ": "+((double) ((buf.length*((long) rounds))*1000))/((double) digestTime*1024*1024) + " MB/s");
 	}
 }

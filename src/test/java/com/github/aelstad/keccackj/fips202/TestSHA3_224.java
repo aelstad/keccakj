@@ -33,4 +33,5 @@ public class TestSHA3_224 {
 		SHA3_224 sha = new SHA3_224();
 		kdtu.runTests(tests, sha, 224/8);
 	}
+	
 }
