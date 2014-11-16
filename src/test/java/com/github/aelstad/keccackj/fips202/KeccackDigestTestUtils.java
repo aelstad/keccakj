@@ -105,8 +105,31 @@ public class KeccackDigestTestUtils {
 			
 			Assert.assertTrue(rv.length == dt.digest.length);;
 			org.junit.Assert.assertTrue(Arrays.equals(rv, dt.digest));			
-		}		
+		}
+		testPerformance(sponge);		
 	}
+
+	public void testPerformance(KeccackSponge sponge)
+	{
+		int rounds = 128;
+		byte[] buf = new byte[2*1024*1024];
+		Random random = new Random();
+		random.nextBytes(buf);
+		long startTs;
+		long stopTs;
+		long digestTime=0;
+		byte[] digest = new byte[16];
+		for(int i=0; i < rounds; ++i) {
+			System.arraycopy(digest, 0, buf, 0, digest.length);
+			startTs = System.currentTimeMillis();
+			sponge.getAbsorbStream().write(buf, 0, buf.length);
+			sponge.getSqueezeStream().read(digest);
+			stopTs = System.currentTimeMillis();
+			digestTime += (stopTs-startTs);
+		}
+		System.out.println("Performance of sponge with capacity "+(1600-sponge.getRateBits()) + ": "+((double) ((buf.length*((long) rounds))*1000))/((double) digestTime*1024*1024) + " MB/s");
+	}
+
 	
 	
 	public void testPerformance(AbstractKeccackMessageDigest messageDigest)
