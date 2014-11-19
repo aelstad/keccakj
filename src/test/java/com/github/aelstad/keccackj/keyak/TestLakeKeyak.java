@@ -1,11 +1,19 @@
 package com.github.aelstad.keccackj.keyak;
 
 import java.io.InputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+
 import org.junit.Test;
+
+import com.github.aelstad.keccackj.spi.LakeKeyakCipher;
+import com.github.aelstad.keccackj.spi.LakeKeyakKey;
 
 public class TestLakeKeyak {
 
@@ -20,26 +28,26 @@ public class TestLakeKeyak {
 	}
 	
 	@Test
-	public void testPerformance() {
+	public void testPerformance() throws InvalidKeyException, InvalidAlgorithmParameterException {
 		int rounds = 128;
 		Random r = new Random();
 		SecureRandom sr = new SecureRandom();
 		byte[] key = new byte[16];
-		byte[] nounce = new byte[16];
+		byte[] nonce = new byte[16];
 		sr.nextBytes(key);
-		sr.nextBytes(nounce);
+		sr.nextBytes(nonce);
 		byte[] tag = new byte[16];
 		byte[] body = new byte[2*1024*1024];
 		r.nextBytes(body);
 		
 		LakeKeyak lkWrap = new LakeKeyak();
-		lkWrap.init(key, nounce);
+		lkWrap.init(key, nonce);
 		lkWrap.wrap(null, 0, 0, body, 0, body.length, body, 0, tag, 0, tag.length);
 		
 		LakeKeyak lkUnwrap = new LakeKeyak();
-		lkUnwrap.init(key, nounce);
+		lkUnwrap.init(key, nonce);
 		lkUnwrap.unwrap(null, 0, 0, body, 0, body.length, body, 0, tag, 0, tag.length);
-
+		
 		long startTs;
 		long stopTs;
 		long wrapTime = 0;

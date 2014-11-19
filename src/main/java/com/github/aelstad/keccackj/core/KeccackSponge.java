@@ -17,7 +17,9 @@ package com.github.aelstad.keccackj.core;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
+import com.github.aelstad.keccackj.core.KeccackStateUtils.StateOp;
 import com.github.aelstad.keccackj.io.BitInputStream;
 import com.github.aelstad.keccackj.io.BitOutputStream;
 
@@ -34,12 +36,12 @@ public class KeccackSponge {
 	
 	SqueezeStream squeezeStream;
 	AbsorbStream absorbStream;
-
 	
 	private final class SqueezeStream extends BitInputStream {
 		private boolean closed = true;
 		
 		public SqueezeStream() {
+			
 		}
 		
 		@Override
@@ -62,9 +64,9 @@ public class KeccackSponge {
 		}
 
 		@Override
-		public int readBits(byte[] bits, long bitOff, long bitLen) {
+		public long readBits(byte[] bits, long bitOff, long bitLen) {
 			open();
-			
+			long rv = 0;
 			while(bitLen > 0) {
 				int remainingBits = keccack1600.remainingBits(ratePos);
 				if(remainingBits <=  0) {
@@ -83,11 +85,39 @@ public class KeccackSponge {
 				ratePos += chunk;
 				bitLen -= chunk;		
 				bitOff += chunk;
+				rv += chunk;
 			}			
 			
 			
-			return 0;
+			return rv;
 		}
+
+		@Override
+		public long transformBits(byte[] input, long inputOff, byte[] output, long outputOff, long bitLen) {
+			long rv = 0;
+			while(bitLen > 0) {
+				int remainingBits = keccack1600.remainingBits(ratePos);
+				if(remainingBits <=  0) {
+					keccack1600.permute();
+					ratePos = 0;
+					remainingBits = keccack1600.remainingBits(ratePos);
+				}
+				int chunk = (int) Math.min(bitLen, remainingBits);
+				
+				if((ratePos & 7)==0 && (inputOff&7)==0 && (outputOff&7)==0 && (chunk&7)==0) {
+					keccack1600.bytesOp(StateOp.XOR_TRANSFORM, ratePos>>3, output, (int) (outputOff>>3), input, (int) (inputOff>>3), chunk>>3);
+				} else {
+					keccack1600.bitsOp(StateOp.XOR_TRANSFORM, ratePos, output, outputOff, input, inputOff, chunk);
+				}
+				
+				ratePos += chunk;
+				bitLen -= chunk;		
+				inputOff += chunk;
+				outputOff += chunk;
+				rv += chunk;
+			}
+			return rv;
+		}		
 	}
 	
 	private final class AbsorbStream extends BitOutputStream {
@@ -163,11 +193,8 @@ public class KeccackSponge {
 		squeezeStream.open();
 		
 		return squeezeStream;
-		 
-		
-		
 	}
-	
+		
 	public BitOutputStream getAbsorbStream() {
 		if(absorbStream == null) {
 			absorbStream = new AbsorbStream();
@@ -180,15 +207,17 @@ public class KeccackSponge {
 	
 	public java.io.FilterOutputStream getTransformingSqueezeStream(final java.io.OutputStream target) {
 		return new FilterOutputStream(target) {
+			byte[] buf = new byte[4096];
 
 			@Override
 			public void write(byte[] b, int off, int len) throws IOException {
-				byte[] buf = new byte[len];
-				getSqueezeStream().read(buf);
-				for(int i=0; i < buf.length; ++i) {
-					buf[i] ^= b[i];
-				}				
-				target.write(buf);
+				while(len > 0) {
+					int chunk = Math.min(len, buf.length);
+					getSqueezeStream().transform(b, off, buf, 0, chunk);										
+					target.write(buf, 0, chunk);
+					off += chunk;
+					len -= chunk;					
+				}
 			}
 
 			@Override
@@ -203,8 +232,9 @@ public class KeccackSponge {
 
 			@Override
 			public void close() throws IOException {
+				buf = null;
 				getSqueezeStream().close();
-				super.close();				
+				super.close();
 			}
 		};
 		

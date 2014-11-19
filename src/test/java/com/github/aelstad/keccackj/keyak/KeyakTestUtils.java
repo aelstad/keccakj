@@ -1,13 +1,20 @@
 package com.github.aelstad.keccackj.keyak;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
+
+import com.github.aelstad.keccackj.spi.LakeKeyakCipher;
+import com.github.aelstad.keccackj.spi.LakeKeyakKey;
 
 public class KeyakTestUtils {
 	public interface TestCommand {} 
@@ -21,7 +28,7 @@ public class KeyakTestUtils {
 	
 	public static class KeyakTest {
 		byte[] key;
-		byte[] nounce;
+		byte[] nonce;
 		
 		List<TestCommand> commands = new ArrayList<TestCommand>();
 	}
@@ -59,7 +66,7 @@ public class KeyakTestUtils {
 				if(token.equalsIgnoreCase("key")) {
 					nextTest.key = Hex.decodeHex(value.toCharArray());
 				} else if(token.equalsIgnoreCase("nonce")) {
-					nextTest.nounce = Hex.decodeHex(value.toCharArray());
+					nextTest.nonce = Hex.decodeHex(value.toCharArray());
 				} else if(token.equalsIgnoreCase("ciphertext")) {
 					pc.ciphertext = Hex.decodeHex(value.toCharArray());
 				} else if(token.equalsIgnoreCase("plaintext")) {
@@ -92,19 +99,34 @@ public class KeyakTestUtils {
 		LakeKeyak wrapper = new LakeKeyak();
 		LakeKeyak unwrapper = new LakeKeyak();
 		LakeKeyak unwrapperFailing = new LakeKeyak();
+		
+		
+		
 		for(KeyakTest dt : tests) {
 			System.out.println("initialize with:");
 			System.out.println("key: "+toHex(dt.key));
-			System.out.println("nonce: "+toHex(dt.nounce));
+			System.out.println("nonce: "+toHex(dt.nonce));
 			
-			wrapper.init(dt.key, dt.nounce);
-			unwrapper.init(dt.key, dt.nounce);
-			unwrapperFailing.init(dt.key, dt.nounce);
+			wrapper.init(dt.key, dt.nonce);
+			unwrapper.init(dt.key, dt.nonce);
+			unwrapperFailing.init(dt.key, dt.nonce);
+			
+			LakeKeyakCipher lkEncryptingCipher = new LakeKeyakCipher();
+			lkEncryptingCipher.init(Cipher.ENCRYPT_MODE, new LakeKeyakKey(dt.key), new IvParameterSpec(dt.nonce));
+			
+			LakeKeyakCipher lkDecryptingCipher = new LakeKeyakCipher();
+			lkDecryptingCipher.init(Cipher.DECRYPT_MODE, new LakeKeyakKey(dt.key), new IvParameterSpec(dt.nonce));
+
+			LakeKeyakCipher lkDecryptingFailing = new LakeKeyakCipher();
+			lkDecryptingFailing.init(Cipher.DECRYPT_MODE, new LakeKeyakKey(dt.key), new IvParameterSpec(dt.nonce));
 			
 			for(TestCommand tc : dt.commands) {
 				if(tc instanceof ForgetCommand) {
 					wrapper.forget();
 					unwrapper.forget();
+					
+					lkEncryptingCipher.forget();
+					lkDecryptingCipher.forget();
 					System.out.println("forget");
 				} else if(tc instanceof PairCommand) {
 					PairCommand pc = (PairCommand) tc;
@@ -119,8 +141,17 @@ public class KeyakTestUtils {
 										
 					wrapper.wrap(pc.ad, 0, pc.ad.length, pc.plaintext, 0, pc.plaintext.length, wrapOut, 0, tagOut, 0, tagOut.length);
 					
+					lkEncryptingCipher.updateAAD(pc.ad);
+					byte[] encrypted = lkEncryptingCipher.doFinal(pc.plaintext);
+					Assert.assertTrue(encrypted.length == pc.plaintext.length + 16);
+					
 					System.out.println("got ciphertext: " + toHex(wrapOut));
 					System.out.println("got tag: " + toHex(tagOut));
+					
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					bos.write(wrapOut);
+					bos.write(tagOut, 0, 16);
+					Assert.assertArrayEquals(bos.toByteArray(), encrypted);
 					
 					Assert.assertArrayEquals(wrapOut, pc.ciphertext);
 					Assert.assertArrayEquals(tagOut, pc.tag);
@@ -128,9 +159,23 @@ public class KeyakTestUtils {
 					unwrapper.unwrap(pc.ad, 0, pc.ad.length, wrapOut, 0, wrapOut.length, unwrapOut, 0, tagOut, 0, tagOut.length);					
 					Assert.assertArrayEquals(unwrapOut, pc.plaintext);
 					
+					lkDecryptingCipher.updateAAD(pc.ad);
+					byte[] decrypted = lkDecryptingCipher.doFinal(encrypted);
+					Assert.assertArrayEquals(decrypted, pc.plaintext);
+
+					lkDecryptingFailing.updateAAD(pc.ad);
+					KeyakTagValidationFailedException expected=null;
+					try {
+						byte[] decryptedFailing = lkDecryptingFailing.doFinal(new byte[16]);
+					} catch(KeyakTagValidationFailedException ex) {
+						expected = ex;
+					}
+					Assert.assertNotNull(expected);
+
+					
 					if(wrapOut.length>0) {
 						wrapOut[0] = (byte) (wrapOut[0]+1);
-						KeyakTagValidationFailedException expected=null;
+						expected=null;
 						try {
 							unwrapperFailing.unwrap(pc.ad, 0, pc.ad.length, wrapOut, 0, wrapOut.length, unwrapOut, 0, tagOut, 0, tagOut.length);
 						} catch(KeyakTagValidationFailedException ex) {

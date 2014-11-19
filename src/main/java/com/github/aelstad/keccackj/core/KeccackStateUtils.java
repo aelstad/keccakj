@@ -23,14 +23,14 @@ package com.github.aelstad.keccackj.core;
 final class KeccackStateUtils {
 		
 	public enum StateOp {
-		ZERO, GET, VALIDATE, XOR_IN, XOR_OUT, WRAP, UNWRAP;
+		ZERO, GET, VALIDATE, XOR_IN, XOR_TRANSFORM, WRAP, UNWRAP;
 		
 		public boolean isIn() {
-			return (this ==StateOp.XOR_IN || this ==StateOp.WRAP || this == StateOp.UNWRAP || this == VALIDATE); 
+			return (this ==StateOp.XOR_IN || this == XOR_TRANSFORM || this ==StateOp.WRAP || this == StateOp.UNWRAP || this == VALIDATE); 
 		}
 		
 		public boolean isOut() {
-			return (this == StateOp.GET || this == XOR_OUT || this==StateOp.WRAP || this == StateOp.UNWRAP); 
+			return (this == StateOp.GET || this == XOR_TRANSFORM || this==StateOp.WRAP || this == StateOp.UNWRAP); 
 		}
 
 	};
@@ -53,7 +53,7 @@ final class KeccackStateUtils {
 		case GET:
 			rv = stateval & mask;
 			break;
-		case XOR_OUT:
+		case XOR_TRANSFORM:
 			rv = (val ^ stateval) & mask;
 			break;
 		case XOR_IN:

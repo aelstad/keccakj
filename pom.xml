@@ -3,11 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.aelstad</groupId>
 	<artifactId>keccackj</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>keccackj</name>
-	<description>Pure Java implementation of FIPS202 (and Keccack). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256 .
-  
-	Status: Test vectors from the KeccackCodePackage works. These are according to the FIPS202 draft. 
+	<description>Pure Java implementation of FIPS202 (and Keccack). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256
+
+	Also includes SecureRandom generators, Stream ciphers and authenticated encryption (LakeKeyak) based on Keccack. 
+	
+	Status: Test vectors from the KeccackCodePackage passed. These are according to the FIPS202 draft. 
 
 	Note: FIPS202 is still in draft.
 </description>
@@ -45,6 +47,26 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<id>sign</id>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keystore>${keystore.path}</keystore>
+					<alias>${keystore.alias}</alias>
+					<storepass>${keystore.storePassword}</storepass>
+					<keypass>${keystore.keyPassword</keypass>
 				</configuration>
 			</plugin>
 		</plugins>

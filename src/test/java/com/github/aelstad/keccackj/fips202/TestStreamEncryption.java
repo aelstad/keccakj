@@ -18,22 +18,34 @@ package com.github.aelstad.keccackj.fips202;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.aelstad.keccackj.fips202.Shake128;
+import com.github.aelstad.keccackj.spi.Shake128Key;
+import com.github.aelstad.keccackj.spi.Shake128StreamCipher;
 
 /**
  * Demonstrates stream encryption/decryption 
  */
 public class TestStreamEncryption {
 	
+	
 	@Test
-	public void testIt() throws IOException {
+	public void testIt() throws IOException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		Shake128 shake128 = new Shake128();
 		SecureRandom keyRandom = new SecureRandom();
 		Random dataRandom = new Random();
@@ -42,12 +54,12 @@ public class TestStreamEncryption {
 		
 		for(int i=8; i < 16384; ++i) {
 			byte[] data = new byte[i];			
-			byte[] nounce = new byte[128];
-			keyRandom.nextBytes(nounce);
+			byte[] nonce = new byte[128];
+			keyRandom.nextBytes(nonce);
 			dataRandom.nextBytes(data);
 			
 			shake128.getAbsorbStream().write(key);
-			shake128.getAbsorbStream().write(nounce);
+			shake128.getAbsorbStream().write(nonce);
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			FilterOutputStream fos = shake128.getTransformingSqueezeStream(bos);
 			fos.write(data);
@@ -59,14 +71,26 @@ public class TestStreamEncryption {
 			
 			shake128.reset();
 			shake128.getAbsorbStream().write(key);
-			shake128.getAbsorbStream().write(nounce);
+			shake128.getAbsorbStream().write(nonce);
 			bos.reset();
 			fos = shake128.getTransformingSqueezeStream(bos);
 			fos.write(encrypted);
 			fos.close();
 			byte[] decrypted = bos.toByteArray();
 			Assert.assertTrue(data != decrypted);
-			Assert.assertTrue(Arrays.equals(decrypted, data));									
+			Assert.assertTrue(Arrays.equals(decrypted, data));				
+			
+			// Using the SPI impl. getCipher not available unless Jar is signed	
+			IvParameterSpec ivParameterSpec = new IvParameterSpec(nonce);
+			Shake128Key shakeKey = new Shake128Key();
+			shakeKey.setRaw(key);
+			Shake128StreamCipher c  = new Shake128StreamCipher();
+			c.init(Cipher.ENCRYPT_MODE, shakeKey, ivParameterSpec);
+			byte[] encrypted2 = c.doFinal(data);
+			Assert.assertArrayEquals(encrypted, encrypted2);
+			c.init(Cipher.DECRYPT_MODE, shakeKey, ivParameterSpec);
+			byte[] decrypted2 = c.doFinal(encrypted2);
+			Assert.assertArrayEquals(decrypted2, data);
 		}
 		
 		System.out.println("Encryption OK");
