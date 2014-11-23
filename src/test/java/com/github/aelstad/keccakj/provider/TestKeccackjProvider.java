@@ -28,13 +28,13 @@ import com.github.aelstad.keccakj.fips202.SHA3_256;
 import com.github.aelstad.keccakj.fips202.SHA3_384;
 import com.github.aelstad.keccakj.fips202.SHA3_512;
 import com.github.aelstad.keccakj.provider.Constants;
-import com.github.aelstad.keccakj.provider.KeccackjProvider;
+import com.github.aelstad.keccakj.provider.KeccakjProvider;
 
 public class TestKeccackjProvider {
 
 	@BeforeClass
 	public static void beforeClass() {
-		Security.addProvider(new KeccackjProvider());
+		Security.addProvider(new KeccakjProvider());
 	}
 	
 	@Test

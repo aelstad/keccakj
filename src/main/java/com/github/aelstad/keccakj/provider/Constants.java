@@ -16,7 +16,7 @@
 package com.github.aelstad.keccakj.provider;
 
 public class Constants {
-	public static final String PROVIDER = "com.github.aelstad.keccackj";
+	public static final String PROVIDER = "com.github.aelstad.keccakj";
 	
 	public static final String SHA3_224 = "SHA3-224";
 	public static final String SHA3_256 = "SHA3-256";
