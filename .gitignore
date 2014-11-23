@@ -1,5 +1,7 @@
 .classpath
 .project
 .settings
+aelstad.jks
+build.properties
 target/**
 /target/
