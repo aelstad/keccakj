@@ -168,7 +168,7 @@ public abstract class AbstractCipher extends CipherSpi implements CipherInterfac
 		return output;
 	}
 	
-	protected abstract void init();
+	protected abstract void init() throws InvalidKeyException;
 
 	@Override
 	public Key unwrap(byte[] wrappedKey, String wrappedKeyAlgorithm, int wrappedKeyType) throws InvalidKeyException, NoSuchAlgorithmException {		

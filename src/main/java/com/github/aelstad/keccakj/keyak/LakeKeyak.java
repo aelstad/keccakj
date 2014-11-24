@@ -15,6 +15,8 @@
  */
 package com.github.aelstad.keccakj.keyak;
 
+import java.security.InvalidKeyException;
+
 import com.github.aelstad.keccakj.core.Keccack1600;
 import com.github.aelstad.keccakj.core.KeccackStateValidationFailedException;
 
@@ -32,19 +34,19 @@ public final class LakeKeyak {
 		this.keccack1600 = new Keccack1600(252, 12);
 	}
 
-	public LakeKeyak(byte[] key, byte[] nounce) 
+	public LakeKeyak(byte[] key, byte[] nounce) throws InvalidKeyException 
 	{
 		this();		
 		init(key, nounce);
 	}
 	
-	public void init(byte[] key, byte[] nounce) 
+	public void init(byte[] key, byte[] nounce) throws InvalidKeyException 
 	{
 		keccack1600.clear();
 		byte keyPackLength = 30;	//240 bits keypack
 		
 		if(key == null || key.length < 16 || key.length > keyPackLength-2)
-			throw new RuntimeException("Invalid key length"); 
+			throw new InvalidKeyException(); 
 						
 		keccack1600.setXorByte(pos, keyPackLength);
 		++pos;
