@@ -23,8 +23,8 @@ public class Constants {
 	public static final String SHA3_384 = "SHA3-384";
 	public static final String SHA3_512 = "SHA3-512";
 	
-	public static final String KECCACK_RND128 = "KECCACK-RND-128";
-	public static final String KECCACK_RND256 = "KECCACK-RND-256";
+	public static final String KECCAK_RND128 = "KECCAK-RND-128";
+	public static final String KECCAK_RND256 = "KECCAK-RND-256";
 	
 	public static final String SHAKE128_STREAM_CIPHER = "SHAKE128";
 	public static final String SHAKE256_STREAM_CIPHER = "SHAKE256";
