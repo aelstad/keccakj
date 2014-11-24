@@ -5,37 +5,34 @@
 	<artifactId>keccakj</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Pure Java implementation of FIPS202 (and Keccack). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256
+	<description>Pure Java implementation of FIPS202 (and Keccak). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256
 
 	Also includes SecureRandom generators, Stream ciphers and authenticated encryption (LakeKeyak) based on Keccack.
 
-	Status: Test vectors from the KeccackCodePackage passed. These are according to the FIPS202 draft.
+	Status: Test vectors from the KeccakCodePackage passed. These are according to the FIPS202 draft.
 
 	Note: FIPS202 is still in draft.
 </description>
+	<url>https://github.com/aelstad/keccakj</url>
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-			<comments>A business-friendly OSS license</comments>
 		</license>
 	</licenses>
 	<developers>
 		<developer>
 			<name>Amund Elstad</name>
-			<email>manfred@sonatype.com</email>
-			<organization>Sonatype</organization>
-			<organizationUrl>http://www.sonatype.com</organizationUrl>
+			<email>amunde.elstad@gmail.com</email>
+			<organization>Github</organization>
+			<organizationUrl>https://github.com/aelstad</organizationUrl>
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git@github.com:example/example-application.git</connection>
-		<developerConnection>scm:git:git@github.com:example/example-application.git</developerConnection>
-		<url>git@github.com:example/example-application.git</url>
+		<connection>scm:git:git@github.com:aelstad/keccakj.git</connection>
+		<developerConnection>scm:git:git@github.com:aelstad/keccakj.git</developerConnection>
+		<url>https://github.com/aelstad/keccakj.git</url>
 	</scm>
-
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -84,6 +81,19 @@
 					<keypass>${keystore.keyPassword</keypass>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 	</build>
 </project>
