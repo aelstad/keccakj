@@ -73,11 +73,13 @@ public final class DuplexRandom {
 	 * @param len
 	 */
 	public void seed(byte[] seed, int off, int len) {
-		duplexIn.forget();		
 		if((duplexIn.size()+len) >= MIN_SEED_LENGTH_BYTES) {			
 			feed(duplexIn.getBuf(), 0, duplexIn.size());
-			feed(seed, off, len);						
-		}				
+			feed(seed, off, len);
+			duplexIn.forget();		
+		} else {
+			duplexIn.write(seed, off, len);
+		}
 	}
 	
 	/**

@@ -20,24 +20,14 @@ import java.security.SecureRandomSpi;
 import com.github.aelstad.keccakj.core.DuplexRandom;
 
 /**
- * A cryptographic random implementation providing 128-bit 
- * security suitable for generating session keys.
+ * A cryptographic random implementation providing 256-bit 
+ * security suitable for generating long term keys.
  * 
- * Forgets the previous state after 2MB of random data.
- * 
- * Re-seeding with a small static seed also forgets the state.
- * 
+ * Forgets the previous state after every call to 
+ * nextBytes. 
  */
-public final class KeccackRnd128 extends SecureRandomSpi {
-	private final DuplexRandom dr = new DuplexRandom(253);
-	
-	private final static int FORGET_INTERVAL = 2*1024*1024;
-	
-	private int forgetCounter;
-	
-	public KeccackRnd128() {
-		this.forgetCounter = FORGET_INTERVAL;
-	}
+public final class KeccakRnd256 extends SecureRandomSpi {
+	private final DuplexRandom dr = new DuplexRandom(509);
 	
 	@Override
 	protected byte[] engineGenerateSeed(int len) {
@@ -52,12 +42,7 @@ public final class KeccackRnd128 extends SecureRandomSpi {
 	@Override
 	protected void engineNextBytes(byte[] buf) {
 		dr.getBytes(buf, 0, buf.length);
-		forgetCounter -= buf.length;
-		if(forgetCounter <= 0)
-		{
-			dr.forget();
-			forgetCounter -= FORGET_INTERVAL;
-		}
+		dr.forget();
 	}
 
 	@Override

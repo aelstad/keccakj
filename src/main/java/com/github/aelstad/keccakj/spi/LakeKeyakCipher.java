@@ -16,6 +16,7 @@
 package com.github.aelstad.keccakj.spi;
 
 import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -24,7 +25,7 @@ import javax.crypto.ShortBufferException;
 
 import com.github.aelstad.keccakj.keyak.LakeKeyak;
 
-public class LakeKeyakCipher extends AbstractCipher {
+public final class LakeKeyakCipher extends AbstractCipher {
 	LakeKeyak lakeKeyak;
 	private enum State { HEADER, BODY, TAG };
 	private State state;
@@ -32,7 +33,7 @@ public class LakeKeyakCipher extends AbstractCipher {
 	private int TAG_SIZE = 16;
 	
 	@Override
-	protected void init() {
+	protected void init() throws InvalidKeyException {
 		if(lakeKeyak == null)
 			lakeKeyak = new LakeKeyak();
 		

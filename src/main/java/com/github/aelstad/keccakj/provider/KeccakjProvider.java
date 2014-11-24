@@ -33,8 +33,8 @@ public final class KeccakjProvider extends Provider {
 		put(messageDigestPrefix + Constants.SHA3_384, "com.github.aelstad.keccakj.fips202.SHA3_384");
 		put(messageDigestPrefix + Constants.SHA3_512, "com.github.aelstad.keccakj.fips202.SHA3_512");		
 		
-		put(secureRandomPrefix + Constants.KECCACK_RND128, "com.github.aelstad.keccakj.spi.KeccackRnd128");
-		put(secureRandomPrefix + Constants.KECCACK_RND256, "com.github.aelstad.keccakj.spi.KeccackRnd256");
+		put(secureRandomPrefix + Constants.KECCAK_RND128, "com.github.aelstad.keccakj.spi.KeccakRnd128");
+		put(secureRandomPrefix + Constants.KECCAK_RND256, "com.github.aelstad.keccakj.spi.KeccakRnd256");
 		
 		put(cipherPrefix + Constants.SHAKE128_STREAM_CIPHER, "com.github.aelstad.keccakj.spi.Shake128StreamCipher");
 		put(cipherPrefix + Constants.SHAKE256_STREAM_CIPHER, "com.github.aelstad.keccakj.spi.Shake256StreamCipher");

@@ -30,7 +30,7 @@ import com.github.aelstad.keccakj.fips202.SHA3_512;
 import com.github.aelstad.keccakj.provider.Constants;
 import com.github.aelstad.keccakj.provider.KeccakjProvider;
 
-public class TestKeccackjProvider {
+public class TestKeccakjProvider {
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -63,15 +63,15 @@ public class TestKeccackjProvider {
 
 	@Test
 	public void testKeccackRnd128() throws Exception {
-		Assert.assertNotNull(SecureRandom.getInstance(Constants.KECCACK_RND128, Constants.PROVIDER));
+		Assert.assertNotNull(SecureRandom.getInstance(Constants.KECCAK_RND128, Constants.PROVIDER));
 	}
 
 	@Test
 	public void testKeccackRnd256() throws Exception {
-		Assert.assertNotNull(SecureRandom.getInstance(Constants.KECCACK_RND256, Constants.PROVIDER));
+		Assert.assertNotNull(SecureRandom.getInstance(Constants.KECCAK_RND256, Constants.PROVIDER));
 		
 		byte[] buf = new byte[1024];
-		SecureRandom.getInstance(Constants.KECCACK_RND256, Constants.PROVIDER).nextBytes(buf);
+		SecureRandom.getInstance(Constants.KECCAK_RND256, Constants.PROVIDER).nextBytes(buf);
 	}
 
 	
