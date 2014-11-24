@@ -56,7 +56,7 @@ public final class KeccackRnd128 extends SecureRandomSpi {
 		if(forgetCounter <= 0)
 		{
 			dr.forget();
-			forgetCounter -= FORGET_INTERVAL;
+			forgetCounter = FORGET_INTERVAL;
 		}
 	}
 
