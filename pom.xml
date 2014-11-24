@@ -42,6 +42,24 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>build.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -61,12 +79,17 @@
 							<goal>sign</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
 				</executions>
 				<configuration>
 					<keystore>${keystore.path}</keystore>
 					<alias>${keystore.alias}</alias>
 					<storepass>${keystore.storePassword}</storepass>
-					<keypass>${keystore.keyPassword</keypass>
 				</configuration>
 			</plugin>
 		</plugins>
