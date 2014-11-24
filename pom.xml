@@ -4,12 +4,12 @@
 	<groupId>com.github.aelstad</groupId>
 	<artifactId>keccakj</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>keccakj</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Pure Java implementation of FIPS202 (and Keccack). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256
 
-	Also includes SecureRandom generators, Stream ciphers and authenticated encryption (LakeKeyak) based on Keccack. 
-	
-	Status: Test vectors from the KeccackCodePackage passed. These are according to the FIPS202 draft. 
+	Also includes SecureRandom generators, Stream ciphers and authenticated encryption (LakeKeyak) based on Keccack.
+
+	Status: Test vectors from the KeccackCodePackage passed. These are according to the FIPS202 draft.
 
 	Note: FIPS202 is still in draft.
 </description>
@@ -21,6 +21,21 @@
 			<comments>A business-friendly OSS license</comments>
 		</license>
 	</licenses>
+	<developers>
+		<developer>
+			<name>Amund Elstad</name>
+			<email>manfred@sonatype.com</email>
+			<organization>Sonatype</organization>
+			<organizationUrl>http://www.sonatype.com</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git@github.com:example/example-application.git</connection>
+		<developerConnection>scm:git:git@github.com:example/example-application.git</developerConnection>
+		<url>git@github.com:example/example-application.git</url>
+	</scm>
+
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
