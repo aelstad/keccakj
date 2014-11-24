@@ -46,8 +46,8 @@ Modify JAVA_HOME/jre/lib/security/java.security and add
 
     ...
     SecureRandom sr;
-    sr = SecureRandom.getInstance(Constants.KECCACK_RND128, Constants.PROVIDER);  
-    sr = SecureRandom.getInstance(Constants.KECCACK_RND256, Constants.PROVIDER);
+    sr = SecureRandom.getInstance(Constants.KECCAK_RND128, Constants.PROVIDER);  
+    sr = SecureRandom.getInstance(Constants.KECCAK_RND256, Constants.PROVIDER);
 
 #### Ciphers:
 ** Note that Cipher use requires the provider to be in a signed and trusted jar. **
@@ -91,9 +91,9 @@ Modify JAVA_HOME/jre/lib/security/java.security and add
 
     // with capacity 253 suitable for session keys
     SecureRandom sr;
-    sr  = new com.github.aelstad.keccakj.spi.KeccackRnd128();
+    sr  = new com.github.aelstad.keccakj.spi.KeccakRnd128();
     // with capacity 509 suitable for long term keys
-    sr = new com.github.aelstad.keccakj.spi.KeccackRnd256();
+    sr = new com.github.aelstad.keccakj.spi.KeccakRnd256();
 
 
 ### Ciphers
