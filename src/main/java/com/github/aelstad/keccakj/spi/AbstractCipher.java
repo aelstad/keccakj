@@ -32,6 +32,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 
+import com.github.aelstad.keccakj.cipher.CipherInterface;
+
 public abstract class AbstractCipher extends CipherSpi implements CipherInterface {
 	private byte[] key;
 	private byte[] nonce;

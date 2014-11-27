@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
+import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -44,7 +45,7 @@ public class TestLakeKeyak {
 	}
 	
 	@Test
-	public void testPerformance() throws InvalidKeyException, InvalidAlgorithmParameterException {
+	public void testPerformance() throws InvalidKeyException, InvalidAlgorithmParameterException, AEADBadTagException {
 		int rounds = 128;
 		Random r = new Random();
 		SecureRandom sr = new SecureRandom();

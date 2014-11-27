@@ -23,12 +23,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.aelstad.keccakj.cipher.CipherProviderFactory;
 import com.github.aelstad.keccakj.fips202.SHA3_224;
 import com.github.aelstad.keccakj.fips202.SHA3_256;
 import com.github.aelstad.keccakj.fips202.SHA3_384;
 import com.github.aelstad.keccakj.fips202.SHA3_512;
-import com.github.aelstad.keccakj.provider.Constants;
-import com.github.aelstad.keccakj.provider.KeccakjProvider;
 
 public class TestKeccakjProvider {
 
@@ -73,6 +72,25 @@ public class TestKeccakjProvider {
 		byte[] buf = new byte[1024];
 		SecureRandom.getInstance(Constants.KECCAK_RND256, Constants.PROVIDER).nextBytes(buf);
 	}
+	
+	@Test
+	public void testShake128StreamCipher() throws Exception {
+		CipherProviderFactory cpf = (CipherProviderFactory) Security.getProvider(Constants.PROVIDER);
+		cpf.getInstance(Constants.SHAKE128_STREAM_CIPHER);
+	}
+	
+	@Test
+	public void testShake256StreamCipher() throws Exception {
+		CipherProviderFactory cpf = (CipherProviderFactory) Security.getProvider(Constants.PROVIDER);
+		cpf.getInstance(Constants.SHAKE256_STREAM_CIPHER);
+	}
+	
+	@Test
+	public void testLakeKeyakCipher() throws Exception {
+		CipherProviderFactory cpf = (CipherProviderFactory) Security.getProvider(Constants.PROVIDER);
+		cpf.getInstance(Constants.LAKEKEYAK_AUTHENTICATING_STREAM_CIPHER);
+	}
+
 
 	
 }

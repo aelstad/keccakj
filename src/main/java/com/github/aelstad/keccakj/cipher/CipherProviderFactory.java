@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.aelstad.keccakj.keyak;
+package com.github.aelstad.keccakj.cipher;
 
-public class KeyakTagValidationFailedException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.NoSuchPaddingException;
+
+public interface CipherProviderFactory {
+	public CipherInterface getInstance(String transformation) throws NoSuchAlgorithmException, NoSuchPaddingException;
 }

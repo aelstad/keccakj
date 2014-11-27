@@ -17,6 +17,8 @@ package com.github.aelstad.keccakj.keyak;
 
 import java.security.InvalidKeyException;
 
+import javax.crypto.AEADBadTagException;
+
 import com.github.aelstad.keccakj.core.Keccack1600;
 import com.github.aelstad.keccakj.core.KeccackStateValidationFailedException;
 
@@ -147,9 +149,9 @@ public final class LakeKeyak {
 		}						
 	}
 	
-	public void validateTag(byte[] buf, int off, int len) throws KeyakTagValidationFailedException {
+	public void validateTag(byte[] buf, int off, int len) throws AEADBadTagException {
 		if(buf == null || off < 0 || (off+len) > buf.length)
-			throw new KeyakTagValidationFailedException();
+			throw new AEADBadTagException();
 		
 		try {
 			while(len > 0) {
@@ -164,7 +166,7 @@ public final class LakeKeyak {
 				}
 			}
 		} catch(KeccackStateValidationFailedException ex) {
-			throw new KeyakTagValidationFailedException();
+			throw new AEADBadTagException();
 		}
 
 	}
@@ -190,7 +192,7 @@ public final class LakeKeyak {
 	}
 	
 	
-	public void unwrap(byte[] ad, int adOff, int adLen, byte[] body, int bodyOff, int bodyLen, byte[] cipherOut, int cipherOff, byte[] tagIn, int tagOff, int tagLen) throws KeyakTagValidationFailedException
+	public void unwrap(byte[] ad, int adOff, int adLen, byte[] body, int bodyOff, int bodyLen, byte[] cipherOut, int cipherOff, byte[] tagIn, int tagOff, int tagLen) throws AEADBadTagException
 	{
 		if(ad != null && adLen > 0)		
 			header(ad, adOff, adLen);

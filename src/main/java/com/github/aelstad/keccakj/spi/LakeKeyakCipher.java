@@ -27,7 +27,7 @@ import com.github.aelstad.keccakj.keyak.LakeKeyak;
 
 public final class LakeKeyakCipher extends AbstractCipher {
 	LakeKeyak lakeKeyak;
-	private enum State { HEADER, BODY, TAG };
+	private enum State { HEADER, BODY, TAG, NEXT };
 	private State state;
 	
 	private int TAG_SIZE = 16;
@@ -38,11 +38,20 @@ public final class LakeKeyakCipher extends AbstractCipher {
 			lakeKeyak = new LakeKeyak();
 		
 		lakeKeyak.init(getKey(), getNonce());
-		state = State.HEADER;
+		state = State.NEXT;
 	}
 
 	@Override
 	protected int engineUpdate(byte[] input, int inputOff, int len, byte[] output, int outputOff) throws ShortBufferException {
+		if(len == 0)
+			return 0;
+		
+		if(state == State.NEXT)
+			state = State.HEADER;
+		
+		if(!(state == State.BODY || state == State.HEADER))
+			throw new IllegalStateException("LakeKeyak state is "+state + ". Not acceppting body.");
+		
 		if(state == State.HEADER) { 
 			lakeKeyak.endHeader(true);
 			state = State.BODY;
@@ -57,8 +66,14 @@ public final class LakeKeyakCipher extends AbstractCipher {
 
 	@Override
 	public void updateAAD(byte[] src, int offset, int len) {
+		if(len == 0)
+			return;
+		
+		if(state == State.NEXT)
+			state = State.HEADER;
+		
 		if(state != State.HEADER)
-			throw new RuntimeException("LakeKeyak not in header mode");
+			throw new IllegalStateException("LakeKeyak state is "+state + ". Not acceppting associated data.");
 		
 		lakeKeyak.header(src, offset, len);	
 	}
@@ -68,6 +83,9 @@ public final class LakeKeyakCipher extends AbstractCipher {
 	@Override
 	protected int engineDoFinal(byte[] input, int inputOff, int len, byte[] output, int outputOff)
 			throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
+		if(state == State.NEXT)
+			state = State.HEADER;
+		
 		boolean encrypt = getMode()==Cipher.ENCRYPT_MODE || getMode()==Cipher.WRAP_MODE;
 		
 		int bodyLen = len;
@@ -83,13 +101,15 @@ public final class LakeKeyakCipher extends AbstractCipher {
 		if(state == State.BODY) {
 			lakeKeyak.endBody();
 		}
+		
+		state = State.TAG;
 		if(encrypt) {
 			lakeKeyak.getTag(output, outputOff+len, TAG_SIZE);	
 		} else {
 			lakeKeyak.validateTag(input, inputOff+bodyLen, TAG_SIZE);
 		}
 		
-		state = State.HEADER;
+		state = State.NEXT;
 		
 		return engineGetOutputSize(len);
 	}
@@ -103,6 +123,9 @@ public final class LakeKeyakCipher extends AbstractCipher {
 	}
 
 	public void forget() {
+		if(state != State.NEXT) {
+			throw new IllegalStateException("LakeKeyak state is "+state + ". Not acceppting forget()");
+		}
 		lakeKeyak.forget();		
 	}
 

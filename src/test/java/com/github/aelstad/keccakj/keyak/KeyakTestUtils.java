@@ -22,13 +22,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 
-import com.github.aelstad.keccakj.keyak.KeyakTagValidationFailedException;
 import com.github.aelstad.keccakj.keyak.LakeKeyak;
 import com.github.aelstad.keccakj.spi.LakeKeyakCipher;
 import com.github.aelstad.keccakj.spi.LakeKeyakKey;
@@ -181,10 +181,10 @@ public class KeyakTestUtils {
 					Assert.assertArrayEquals(decrypted, pc.plaintext);
 
 					lkDecryptingFailing.updateAAD(pc.ad);
-					KeyakTagValidationFailedException expected=null;
+					AEADBadTagException expected=null;
 					try {
 						byte[] decryptedFailing = lkDecryptingFailing.doFinal(new byte[16]);
-					} catch(KeyakTagValidationFailedException ex) {
+					} catch(AEADBadTagException ex) {
 						expected = ex;
 					}
 					Assert.assertNotNull(expected);
@@ -195,7 +195,7 @@ public class KeyakTestUtils {
 						expected=null;
 						try {
 							unwrapperFailing.unwrap(pc.ad, 0, pc.ad.length, wrapOut, 0, wrapOut.length, unwrapOut, 0, tagOut, 0, tagOut.length);
-						} catch(KeyakTagValidationFailedException ex) {
+						} catch(AEADBadTagException ex) {
 							expected = ex;
 						}
 						Assert.assertNotNull(expected);
