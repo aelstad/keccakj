@@ -105,6 +105,7 @@
 					<keystore>${keystore.path}</keystore>
 					<alias>${keystore.alias}</alias>
 					<storepass>${keystore.storePassword}</storepass>
+					<tsa>${tsa.url}</tsa>
 				</configuration>
 			</plugin>
 		</plugins>
