@@ -14,7 +14,7 @@ Pure Java implementation of Keccak with implementations of
 
 ### Keccakj is licensed under the Apache License, Version 2.0.
 
-#How to use
+# How to use
 
 ### Using Keccakj with the Java security API:
 
