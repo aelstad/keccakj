@@ -21,6 +21,7 @@ import javax.crypto.AEADBadTagException;
 import com.github.aelstad.keccakj.core.KeccakStateValidationFailedException;
 import com.github.aelstad.keccakj.core.Keccak1600;
 
+@Deprecated
 public final class LakeKeyak {
 
 	private int pos;
