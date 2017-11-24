@@ -6,6 +6,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.aelstad.keccakj.kangaroo.KangarooTwelve;
+
 public class TestKangarooTwelve {
 
 	byte[] getPattern(int length) {
