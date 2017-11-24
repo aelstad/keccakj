@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,10 @@ import com.github.aelstad.keccakj.spi.Shake128Key;
 import com.github.aelstad.keccakj.spi.Shake128StreamCipher;
 
 /**
- * Demonstrates stream encryption/decryption 
+ * Demonstrates stream encryption/decryption
  */
 public class TestStreamEncryption {
-	
-	
+
 	@Test
 	public void testIt() throws IOException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		Shake128 shake128 = new Shake128();
@@ -52,13 +51,13 @@ public class TestStreamEncryption {
 		Random dataRandom = new Random();
 		byte[] key = new byte[128];
 		keyRandom.nextBytes(key);
-		
+
 		for(int i=8; i < 16384; ++i) {
-			byte[] data = new byte[i];			
+			byte[] data = new byte[i];
 			byte[] nonce = new byte[128];
 			keyRandom.nextBytes(nonce);
 			dataRandom.nextBytes(data);
-			
+
 			shake128.getAbsorbStream().write(key);
 			shake128.getAbsorbStream().write(nonce);
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -67,9 +66,9 @@ public class TestStreamEncryption {
 			fos.close();
 			Assert.assertTrue(bos.size()==data.length);
 			Assert.assertTrue(!Arrays.equals(data, bos.toByteArray()));
-			
+
 			byte[] encrypted = bos.toByteArray();
-			
+
 			shake128.reset();
 			shake128.getAbsorbStream().write(key);
 			shake128.getAbsorbStream().write(nonce);
@@ -79,9 +78,9 @@ public class TestStreamEncryption {
 			fos.close();
 			byte[] decrypted = bos.toByteArray();
 			Assert.assertTrue(data != decrypted);
-			Assert.assertTrue(Arrays.equals(decrypted, data));				
-			
-			// Using the SPI impl. getCipher not available unless Jar is signed	
+			Assert.assertTrue(Arrays.equals(decrypted, data));
+
+			// Using the SPI impl. getCipher not available unless Jar is signed
 			IvParameterSpec ivParameterSpec = new IvParameterSpec(nonce);
 			Shake128Key shakeKey = new Shake128Key();
 			shakeKey.setRaw(key);
@@ -93,9 +92,8 @@ public class TestStreamEncryption {
 			byte[] decrypted2 = c.doFinal(encrypted2);
 			Assert.assertArrayEquals(decrypted2, data);
 		}
-		
+
 		System.out.println("Encryption OK");
 
-		
 	}
 }

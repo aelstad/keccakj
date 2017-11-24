@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.aelstad.keccakj.core.Keccack1600;
+import com.github.aelstad.keccakj.core.Keccak1600;
 
 public class TestPermutation 
 {	
@@ -48,13 +48,13 @@ public class TestPermutation
 		byte[] inBytes = org.apache.commons.codec.binary.Hex.decodeHex(inHexBytes.replace(" ", "").toCharArray());
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 
-		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
+		keccak1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
-		keccack1600.theta();
+		keccak1600.theta();
 				
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		return outBytes;
 	}
@@ -63,13 +63,13 @@ public class TestPermutation
 	{
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 
-		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
+		keccak1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
-		keccack1600.pi();
+		keccak1600.pi();
 				
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		return outBytes;
 	}
@@ -78,13 +78,13 @@ public class TestPermutation
 	{
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 
-		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
+		keccak1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
-		keccack1600.rho();
+		keccak1600.rho();
 				
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		return outBytes;
 	}
@@ -93,13 +93,13 @@ public class TestPermutation
 	{
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 
-		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
+		keccak1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
-		keccack1600.chi();
+		keccak1600.chi();
 				
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		return outBytes;
 	}
@@ -108,13 +108,13 @@ public class TestPermutation
 	{
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 
-		keccack1600.setXorBytes(0, inBytes, 0, inBytes.length);
+		keccak1600.setXorBytes(0, inBytes, 0, inBytes.length);
 		
-		keccack1600.iota(round);
+		keccak1600.iota(round);
 				
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		return outBytes;
 	}
@@ -207,10 +207,10 @@ public class TestPermutation
 				
 		byte[] outBytes = new byte[1600/8];
 
-		Keccack1600 keccack1600 = new Keccack1600(0);
-		keccack1600.permute();
+		Keccak1600 keccak1600 = new Keccak1600(0);
+		keccak1600.permute();
 
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		
 		Assert.assertTrue(Arrays.equals(expectedBytes, outBytes));		
 	}
@@ -224,11 +224,11 @@ public class TestPermutation
 		byte[] expectedBytes = org.apache.commons.codec.binary.Hex.decodeHex(expectedtHexBytes .replace(" ", "").toCharArray());
 		byte[] outBytes = new byte[1600/8];
 		
-		Keccack1600 keccack1600 = new Keccack1600(0);
-		keccack1600.permute();
-		keccack1600.permute();
+		Keccak1600 keccak1600 = new Keccak1600(0);
+		keccak1600.permute();
+		keccak1600.permute();
 
-		keccack1600.getBytes(0, outBytes, 0, outBytes.length);
+		keccak1600.getBytes(0, outBytes, 0, outBytes.length);
 		Assert.assertTrue(Arrays.equals(expectedBytes, outBytes));			
 	}
 	
@@ -237,18 +237,38 @@ public class TestPermutation
 		int ROUNDS=15;
 		int BENCH=100000;
 
-		Keccack1600 keccack1600 = new Keccack1600(0);
+		Keccak1600 keccak1600 = new Keccak1600(0);
 		long total=0;
 		for(int i=0; i < ROUNDS; ++i) {
 			long ts1 = System.currentTimeMillis();
 			for(int j=0; j < BENCH; ++j) {
-				keccack1600.permute();
+				keccak1600.permute();
 			}
 			long ts2 = System.currentTimeMillis();
 			total += (ts2-ts1);
 		}
 		System.out.println("Average Permutation speed: "+ ROUNDS*BENCH*1000/(total) + " permutations/second. ");
 	}
+	
+	
+	@Test
+	public void testPermutationSpeed2() {
+		int ROUNDS=1;
+		int BENCH=1024*1024*1024;
+
+		Keccak1600 keccak1600 = new Keccak1600(256, 1);
+		long total=0;
+		for(int i=0; i < ROUNDS; ++i) {
+			long ts1 = System.currentTimeMillis();
+			for(int j=0; j < BENCH; ++j) {
+				keccak1600.permute();
+			}
+			long ts2 = System.currentTimeMillis();
+			total += (ts2-ts1);
+		}
+		System.out.println("Speed with one round "+ (1024) / (((double) total)/1000.0) + " MB/s ");
+	}
+	
 	
 		
 }

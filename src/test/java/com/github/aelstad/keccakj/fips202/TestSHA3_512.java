@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ public class TestSHA3_512 {
 
 	@Test
 	public void checkTestVectors() throws Exception {
-		InputStream is = getClass().getResourceAsStream("/com/github/aelstad/keccackj/fips202/ShortMsgKAT_SHA3-512.txt");		
-		
-		KeccackDigestTestUtils kdtu = new KeccackDigestTestUtils();
-		List<KeccackDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
+		InputStream is = KeccakDigestTestUtils.getResourceStreamInPackage(getClass(), "ShortMsgKAT_SHA3-512.txt");
+
+		KeccakDigestTestUtils kdtu = new KeccakDigestTestUtils();
+		List<KeccakDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
 		SHA3_512 sha = new SHA3_512();
 		kdtu.runTests(tests, sha, sha.getDigestLength());
 	}
-	
+
 }

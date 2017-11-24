@@ -15,7 +15,7 @@
  */
 package com.github.aelstad.keccakj.spi;
 
-import com.github.aelstad.keccakj.core.KeccackSponge;
+import com.github.aelstad.keccakj.core.KeccakSponge;
 import com.github.aelstad.keccakj.fips202.Shake256;
 
 public class Shake256StreamCipher extends AbstractSpongeStreamCipher {
@@ -23,7 +23,7 @@ public class Shake256StreamCipher extends AbstractSpongeStreamCipher {
 	private Shake256 sponge;
 
 	@Override
-	KeccackSponge getSponge() {
+	KeccakSponge getSponge() {
 		if(sponge == null) {
 			sponge = new Shake256();
 		}

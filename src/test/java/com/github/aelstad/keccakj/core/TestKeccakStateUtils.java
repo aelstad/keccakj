@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package com.github.aelstad.keccakj.core;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.aelstad.keccakj.core.KeccackStateUtils;
-import com.github.aelstad.keccakj.core.KeccackStateUtils.StateOp;
+import com.github.aelstad.keccakj.core.KeccakStateUtils;
+import com.github.aelstad.keccakj.core.KeccakStateUtils.StateOp;
 
+public class TestKeccakStateUtils {
 
-public class TestKeccackStateUtils {
-	
 	long[] getState() {
 		long[] rv = new long[20];
 		for(int i=0; i < rv.length; ++i)
 			rv[i] = ~0l;
-		
+
 		return rv;
 	}
 
@@ -38,26 +37,25 @@ public class TestKeccackStateUtils {
 		for(int i=0; i < 20; ++i) {
 			for(int j=0; j < 2; ++j) {
 				long expected = ~0l ^ (0xffffffffl << j*32);
-				long[] state = getState();				
-				KeccackStateUtils.intOp(StateOp.ZERO, state, 2*i+j, 0);
+				long[] state = getState();
+				KeccakStateUtils.intOp(StateOp.ZERO, state, 2*i+j, 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
 	}
-	
+
 	@Test
 	public void testShortOp()
 	{
 		for(int i=0; i < 20; ++i) {
 			for(int j=0; j < 4; ++j) {
 				long expected = ~0l ^ (0xffffl << j*16);
-				long[] state = getState();				
-				KeccackStateUtils.shortOp(StateOp.ZERO, state, 4*i+j, (short) 0);
+				long[] state = getState();
+				KeccakStateUtils.shortOp(StateOp.ZERO, state, 4*i+j, (short) 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
 	}
-
 
 	@Test
 	public void testByteOp()
@@ -65,25 +63,24 @@ public class TestKeccackStateUtils {
 		for(int i=0; i < 20; ++i) {
 			for(int j=0; j < 8; ++j) {
 				long expected = ~0l ^ (0xffl << j*8);
-				long[] state = getState();				
-				KeccackStateUtils.byteOp(StateOp.ZERO, state, 8*i+j, (byte) 0);
+				long[] state = getState();
+				KeccakStateUtils.byteOp(StateOp.ZERO, state, 8*i+j, (byte) 0);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
 	}
-	
+
 	@Test
 	public void testBitOp()
 	{
 		for(int i=0; i < 20; ++i) {
 			for(int j=0; j < 64; ++j) {
 				long expected = ~0l ^ (1l << j);
-				long[] state = getState();				
-				KeccackStateUtils.bitOp(StateOp.ZERO, state, 64*i+j, false);
+				long[] state = getState();
+				KeccakStateUtils.bitOp(StateOp.ZERO, state, 64*i+j, false);
 				Assert.assertTrue(state[i] == expected);
 			}
 		}
 	}
-	
 
 }

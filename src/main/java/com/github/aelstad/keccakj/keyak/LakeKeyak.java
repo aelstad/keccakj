@@ -1,5 +1,4 @@
 /*
- * Copyright 2014 Amund Elstad. 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +18,13 @@ import java.security.InvalidKeyException;
 
 import javax.crypto.AEADBadTagException;
 
-import com.github.aelstad.keccakj.core.Keccack1600;
-import com.github.aelstad.keccakj.core.KeccackStateValidationFailedException;
+import com.github.aelstad.keccakj.core.KeccakStateValidationFailedException;
+import com.github.aelstad.keccakj.core.Keccak1600;
 
 public final class LakeKeyak {
 
 	private int pos;
-	private Keccack1600 keccack1600;
+	private Keccak1600 keccak1600;
 	
 	private static final byte HEADER_MORE = 0;
 	private static final byte TAG_NEXT = 1;
@@ -33,7 +32,7 @@ public final class LakeKeyak {
 	private static final byte BODY_MORE =  3;
 	
 	public LakeKeyak() {
-		this.keccack1600 = new Keccack1600(252, 12);
+		this.keccak1600 = new Keccak1600(252, 12);
 	}
 
 	public LakeKeyak(byte[] key, byte[] nounce) throws InvalidKeyException 
@@ -44,22 +43,22 @@ public final class LakeKeyak {
 	
 	public void init(byte[] key, byte[] nounce) throws InvalidKeyException 
 	{
-		keccack1600.clear();
+		keccak1600.clear();
 		byte keyPackLength = 30;	//240 bits keypack
 		
 		if(key == null || key.length < 16 || key.length > keyPackLength-2)
 			throw new InvalidKeyException(); 
 						
-		keccack1600.setXorByte(pos, keyPackLength);
+		keccak1600.setXorByte(pos, keyPackLength);
 		++pos;
-		keccack1600.setXorBytes(pos, key, 0, key.length);
+		keccak1600.setXorBytes(pos, key, 0, key.length);
 		pos += key.length;
-		keccack1600.setXorByte(pos, (byte) 1);		
+		keccak1600.setXorByte(pos, (byte) 1);		
 		pos = keyPackLength;
 		
-		keccack1600.setXorByte(pos, (byte) 1);
+		keccak1600.setXorByte(pos, (byte) 1);
 		++pos;
-		keccack1600.setXorByte(pos, (byte) 0);
+		keccak1600.setXorByte(pos, (byte) 0);
 		++pos;
 		
 		header(nounce, 0, nounce.length);		
@@ -67,16 +66,16 @@ public final class LakeKeyak {
 	
 	public void header(byte[] buf, int off, int len) {
 		while(len > 0) {
-			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+			int remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			if(remainingBytes == 0) {				
-				keccack1600.pad(HEADER_MORE, 2, pos<<3);
-				keccack1600.permute();
+				keccak1600.pad(HEADER_MORE, 2, pos<<3);
+				keccak1600.permute();
 				pos = 0;
-				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+				remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			}
 			
 			int chunk =  Math.min(len, remainingBytes);
-			keccack1600.setXorBytes(pos, buf, off, chunk);
+			keccak1600.setXorBytes(pos, buf, off, chunk);
 			
 			off += chunk;
 			len -= chunk;
@@ -85,24 +84,24 @@ public final class LakeKeyak {
 	}
 			
 	public void endHeader(boolean hasBody) {
-		keccack1600.pad(hasBody ? BODY_NEXT : TAG_NEXT, 2, pos<<3);
+		keccak1600.pad(hasBody ? BODY_NEXT : TAG_NEXT, 2, pos<<3);
 		
-		keccack1600.permute();
+		keccak1600.permute();
 		pos = 0;
 	}
 	
 	public void bodyWrap(byte[] in, int inoff, byte[] out, int outoff, int len) {
 		while(len > 0) {
-			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+			int remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			if(remainingBytes == 0) {				
-				keccack1600.pad(BODY_MORE, 2, pos << 3);
-				keccack1600.permute();
+				keccak1600.pad(BODY_MORE, 2, pos << 3);
+				keccak1600.permute();
 				pos = 0;
-				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+				remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			}
 			
 			int chunk =  Math.min(len, remainingBytes);
-			keccack1600.wrapBytes(pos, out, outoff, in, inoff, chunk);
+			keccak1600.wrapBytes(pos, out, outoff, in, inoff, chunk);
 			inoff += chunk;
 			outoff += chunk;
 			len -= chunk;
@@ -112,16 +111,16 @@ public final class LakeKeyak {
 	
 	public void bodyUnwrap(byte[] in, int inoff, byte[] out, int outoff, int len) {
 		while(len > 0) {
-			int remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+			int remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			if(remainingBytes == 0) {
-				keccack1600.pad(BODY_MORE, 2, pos << 3);
-				keccack1600.permute();
+				keccak1600.pad(BODY_MORE, 2, pos << 3);
+				keccak1600.permute();
 				pos = 0;
-				remainingBytes = (keccack1600.remainingBits(pos<<3)-4)>>3;
+				remainingBytes = (keccak1600.remainingBits(pos<<3)-4)>>3;
 			}
 			
 			int chunk =  Math.min(len, remainingBytes);
-			keccack1600.unwrapBytes(pos, out, outoff, in, inoff, chunk);
+			keccak1600.unwrapBytes(pos, out, outoff, in, inoff, chunk);
 			inoff += chunk;
 			outoff += chunk;
 			len -= chunk;
@@ -131,20 +130,20 @@ public final class LakeKeyak {
 	
 	
 	public void endBody() {
-		keccack1600.pad(TAG_NEXT, 2, pos<<3);
-		keccack1600.permute();
+		keccak1600.pad(TAG_NEXT, 2, pos<<3);
+		keccak1600.permute();
 		pos = 0;		
 	}
 	
 	public void getTag(byte[] buf, int off, int len) {
 		while(len > 0) {
-			int chunk = Math.min(len, (keccack1600.getRateBits()-4)>>3);
-			keccack1600.getBytes(0, buf, off, chunk);
+			int chunk = Math.min(len, (keccak1600.getRateBits()-4)>>3);
+			keccak1600.getBytes(0, buf, off, chunk);
 			off += chunk;
 			len -= chunk;
 			if(len > 0) {
-				keccack1600.pad(1);
-				keccack1600.permute();
+				keccak1600.pad(1);
+				keccak1600.permute();
 			}
 		}						
 	}
@@ -155,17 +154,17 @@ public final class LakeKeyak {
 		
 		try {
 			while(len > 0) {
-				int chunk = Math.min(len, (keccack1600.getRateBits()-4)>>3);
+				int chunk = Math.min(len, (keccak1600.getRateBits()-4)>>3);
 
-				keccack1600.validateBytes(0, buf, off, chunk);
+				keccak1600.validateBytes(0, buf, off, chunk);
 				off += chunk;
 				len -= chunk;
 				if(len > 0) {
-					keccack1600.pad(1);
-					keccack1600.permute();
+					keccak1600.pad(1);
+					keccak1600.permute();
 				}
 			}
-		} catch(KeccackStateValidationFailedException ex) {
+		} catch(KeccakStateValidationFailedException ex) {
 			throw new AEADBadTagException();
 		}
 
@@ -211,19 +210,19 @@ public final class LakeKeyak {
 	
 	
 	public void forget() {
-		keccack1600.pad(0);
-		keccack1600.permute();
+		keccak1600.pad(0);
+		keccak1600.permute();
 		
-		keccack1600.zeroBytes(0, 168);
-		keccack1600.pad(168<<3);		
-		keccack1600.permute();
+		keccak1600.zeroBytes(0, 168);
+		keccak1600.pad(168<<3);		
+		keccak1600.permute();
 		
 		pos = 0;
 	}
 	
 	public byte[] getRateState() {
 		byte[] rv = new byte[168];
-		keccack1600.getBytes(0, rv, 0, rv.length);
+		keccak1600.getBytes(0, rv, 0, rv.length);
 		return rv;
 	}
 	

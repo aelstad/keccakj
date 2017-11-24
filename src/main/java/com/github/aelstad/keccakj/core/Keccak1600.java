@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,112 +17,96 @@ package com.github.aelstad.keccakj.core;
 
 import java.util.Arrays;
 
-import com.github.aelstad.keccakj.core.KeccackStateUtils.StateOp;
+import com.github.aelstad.keccakj.core.KeccakStateUtils.StateOp;
 
 /**
- * Java port of the reference implementation of Keccack-1600 permuation 
+ * Java port of the reference implementation of Keccack-1600 permuation
  * from https://github.com/gvanas/KeccakCodePackage
  *
  */
-public final class Keccack1600 {
-	
-	public Keccack1600()
+public final class Keccak1600 {
+
+	public Keccak1600()
 	{
 		this(256, 24);
 	}
-	
-	public Keccack1600(int capacitityInBits) {
+
+	public Keccak1600(int capacitityInBits) {
 		this(capacitityInBits, NR_ROUNDS);
 	}
-	
-	public Keccack1600(int capacityInBits, int rounds) {	
+
+	public Keccak1600(int capacityInBits, int rounds) {
 		this.capacitityBits = capacityInBits;
 		this.rateBits = 1600-capacityInBits;
 		this.rateBytes = rateBits >> 3;
 		this.firstRound = NR_ROUNDS - rounds;
-		
+
 		clear();
 	}
-	
+
 	byte byteOp(StateOp stateOp, int stateByteOff, byte in)
 	{
-		if(stateByteOff >= rateBytes)
-			throw new IndexOutOfBoundsException();
-		
-		return KeccackStateUtils.byteOp(stateOp, state, stateByteOff, in); 		
+		return KeccakStateUtils.byteOp(stateOp, state, stateByteOff, in);
 	}
-	
-	
+
 	void bytesOp(StateOp stateOp, int stateByteOff, byte[] out, int outpos, byte[] in, int inpos, int lenBytes)
 	{
-		if(stateByteOff+lenBytes > rateBytes)
-			throw new IndexOutOfBoundsException();
-		
-		KeccackStateUtils.bytesOp(stateOp, state, stateByteOff, out, outpos, in, inpos, lenBytes);		
+		KeccakStateUtils.bytesOp(stateOp, state, stateByteOff, out, outpos, in, inpos, lenBytes);
 	}
-	
+
 	void bitsOp(StateOp stateOp, int stateBitOff, byte[] out, long outpos, byte[] in, long inpos, int lenBits)
 	{
-		if(stateBitOff+lenBits > rateBits)
-			throw new IndexOutOfBoundsException();
-		
-		KeccackStateUtils.bitsOp(stateOp, state, stateBitOff, out, outpos, in, inpos, lenBits);		
+		KeccakStateUtils.bitsOp(stateOp, state, stateBitOff, out, outpos, in, inpos, lenBits);
 	}
-	
 
 	public void validateBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
 		bytesOp(StateOp.VALIDATE, stateByteOff, null, 0, buf, bufByteOff, lenBytes);
 	}
-	
+
 	public void wrapBytes(int stateByteOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBytes)  {
 		bytesOp(StateOp.WRAP, stateByteOff, outBuf, outBufOff, inBuf, inBufOff, lenBytes);
 	}
-	
+
 	public void unwrapBytes(int stateByteOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBytes) {
 		bytesOp(StateOp.UNWRAP, stateByteOff, outBuf, outBufOff, inBuf, inBufOff, lenBytes);
 	}
 
-	
 	public void getBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
 		bytesOp(StateOp.GET, stateByteOff, buf, bufByteOff, null, 0, lenBytes);
 	}
-	
-		
+
 	public void setXorByte(int stateByteOff, byte val) {
 		byteOp(StateOp.XOR_IN, stateByteOff, val);
 	}
 
-	
 	public void setXorBytes(int stateByteOff, byte[] buf, int bufByteOff, int lenBytes) {
 		bytesOp(StateOp.XOR_IN, stateByteOff, null, 0, buf, bufByteOff, lenBytes);
 	}
-	
-	
+
 	public void zeroBytes(int stateByteOff, int lenBytes) {
 		bytesOp(StateOp.ZERO, stateByteOff, null, 0, null, 0, lenBytes);
 	}
-	
-	
+
 	public void getBits(int stateBitOff, byte[] buf, long bufBitOff, int lenBits) {
-		bitsOp(StateOp.GET, stateBitOff, buf, bufBitOff, null, 0, lenBits);		
+		bitsOp(StateOp.GET, stateBitOff, buf, bufBitOff, null, 0, lenBits);
 	}
-	
+
 	public final void setXorBits(int stateBitOff, byte[] buf, long bufBitOff, int lenBits) {
 		bitsOp(StateOp.XOR_IN, stateBitOff, null, 0, buf, bufBitOff, lenBits);
 	}
-		
+
 	public void zeroBits(int stateBitOff, int lenBits) {
 		bitsOp(StateOp.ZERO, stateBitOff, null, 0, null, 0, lenBits);
 	}
-	
+
 	public void validateBits(int stateBitOff, byte[] buf, int bufBitOff, int lenBits) {
 		bitsOp(StateOp.VALIDATE, stateBitOff, null, 0, buf, bufBitOff, lenBits);
 	}
-	
+
 	public void wrapBits(int stateBitOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBits)  {
 		bitsOp(StateOp.WRAP, stateBitOff, outBuf, outBufOff, inBuf, inBufOff, lenBits);
 	}
-	
+
 	public void unwrapBits(int stateBitOff, byte[] outBuf, int outBufOff, byte[] inBuf, int inBufOff, int lenBits) {
 		bitsOp(StateOp.UNWRAP, stateBitOff, outBuf, outBufOff, inBuf, inBufOff, lenBits);
 	}
@@ -131,35 +115,33 @@ public final class Keccack1600 {
 		return remainingBits(longOff << 6) >> 6;
 	}
 
-	
 	public int remainingBytes(int byteOff) {
 		return remainingBits(byteOff << 3) >> 3;
 	}
-					
+
 	public int remainingBits(int bitOff) {
 		return rateBits - bitOff;
 	}
-	
-	
-	public void pad(byte domainBits, int domainBitLength, int bitPosition) 
+
+	public void pad(byte domainBits, int domainBitLength, int bitPosition)
 	{
 		int len = rateBits - bitPosition;
-		
+
 		if(len < 0 || domainBitLength>=7)
 			throw new IndexOutOfBoundsException();
-		
+
 		// add bits for multirate padding
 		domainBits |= (1 << domainBitLength);
 		++domainBitLength;
-		
+
 		boolean multirateComplete  = false;
 		// no zeros in multirate padding. add final bit.
 		if(len==domainBitLength+1) {
 			domainBits |= (1 << domainBitLength);
-			++domainBitLength;			
+			++domainBitLength;
 			multirateComplete = true;
 		}
-		
+
 		while(domainBitLength > 0) {
 			int chunk = Math.min(len, domainBitLength);
 			if(chunk == 0) {
@@ -168,8 +150,8 @@ public final class Keccack1600 {
 				bitPosition = 0;
 				continue;
 			}
-			KeccackStateUtils.bitsOp(StateOp.XOR_IN, state, bitPosition, domainBits, chunk);
-			
+			KeccakStateUtils.bitsOp(StateOp.XOR_IN, state, bitPosition, domainBits, chunk);
+
 			len -= chunk;
 			domainBits >>= chunk;
 			domainBitLength -= chunk;
@@ -177,33 +159,33 @@ public final class Keccack1600 {
 		}
 		if(!multirateComplete) {
 			if(len == 0) {
-				permute();				
+				permute();
 			}
-			KeccackStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
+			KeccakStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
 		}
-	}	
-	
-	public void pad(int padBitPosition) 
+	}
+
+	public void pad(int padBitPosition)
 	{
 		int len = rateBits - padBitPosition;
-		
+
 		if(len < 0)
 			throw new IndexOutOfBoundsException();
-		
+
 		if(len == 0) {
 			permute();
 			padBitPosition=0;
 		}
-		
-		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, padBitPosition, true);		
-		
+
+		KeccakStateUtils.bitOp(StateOp.XOR_IN, state, padBitPosition, true);
+
 		if(len == 1) {
 			permute();
-		} 			
-		
-		KeccackStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
+		}
+
+		KeccakStateUtils.bitOp(StateOp.XOR_IN, state, rateBits-1, true);
 	}
-			
+
 	public void permute()
 	{
 /*
@@ -267,11 +249,11 @@ public final class Keccack1600 {
 		c2 ^= out22;
 		c3 ^= out23;
 		c4 ^= out24;
-		long d0 = ((c1  << 1) | (c1 >>> 63 )) ^ c4;
-		long d1 = ((c2  << 1) | (c2 >>> 63 )) ^ c0;
-		long d2 = ((c3  << 1) | (c3 >>> 63 )) ^ c1;
-		long d3 = ((c4  << 1) | (c4 >>> 63 )) ^ c2;
-		long d4 = ((c0  << 1) | (c0 >>> 63 )) ^ c3;
+		long d0 = Long.rotateLeft(c1, 1) ^ c4;
+		long d1 = Long.rotateLeft(c2, 1) ^ c0;
+		long d2 = Long.rotateLeft(c3, 1) ^ c1;
+		long d3 = Long.rotateLeft(c4, 1) ^ c2;
+		long d4 = Long.rotateLeft(c0, 1) ^ c3;
 		out0 = out0 ^ d0;
 		out1 = out1 ^ d1;
 		out2 = out2 ^ d2;
@@ -299,30 +281,30 @@ public final class Keccack1600 {
 		out24 = out24 ^ d4;
 		// RHO AND PI
 		long piOut0 = out0;
-		long piOut16 = ((out5  << 36) | (out5 >>> 28 ));
-		long piOut7 = ((out10  << 3) | (out10 >>> 61 ));
-		long piOut23 = ((out15  << 41) | (out15 >>> 23 ));
-		long piOut14 = ((out20  << 18) | (out20 >>> 46 ));
-		long piOut10 = ((out1  << 1) | (out1 >>> 63 ));
-		long piOut1 = ((out6  << 44) | (out6 >>> 20 ));
-		long piOut17 = ((out11  << 10) | (out11 >>> 54 ));
-		long piOut8 = ((out16  << 45) | (out16 >>> 19 ));
-		long piOut24 = ((out21  << 2) | (out21 >>> 62 ));
-		long piOut20 = ((out2  << 62) | (out2 >>> 2 ));
-		long piOut11 = ((out7  << 6) | (out7 >>> 58 ));
-		long piOut2 = ((out12  << 43) | (out12 >>> 21 ));
-		long piOut18 = ((out17  << 15) | (out17 >>> 49 ));
-		long piOut9 = ((out22  << 61) | (out22 >>> 3 ));
-		long piOut5 = ((out3  << 28) | (out3 >>> 36 ));
-		long piOut21 = ((out8  << 55) | (out8 >>> 9 ));
-		long piOut12 = ((out13  << 25) | (out13 >>> 39 ));
-		long piOut3 = ((out18  << 21) | (out18 >>> 43 ));
-		long piOut19 = ((out23  << 56) | (out23 >>> 8 ));
-		long piOut15 = ((out4  << 27) | (out4 >>> 37 ));
-		long piOut6 = ((out9  << 20) | (out9 >>> 44 ));
-		long piOut22 = ((out14  << 39) | (out14 >>> 25 ));
-		long piOut13 = ((out19  << 8) | (out19 >>> 56 ));
-		long piOut4 = ((out24  << 14) | (out24 >>> 50 ));
+		long piOut16 = Long.rotateLeft(out5, 36);
+		long piOut7 = Long.rotateLeft(out10, 3);
+		long piOut23 = Long.rotateLeft(out15, 41);
+		long piOut14 = Long.rotateLeft(out20, 18);
+		long piOut10 = Long.rotateLeft(out1, 1);
+		long piOut1 = Long.rotateLeft(out6, 44);
+		long piOut17 = Long.rotateLeft(out11, 10);
+		long piOut8 = Long.rotateLeft(out16, 45);
+		long piOut24 = Long.rotateLeft(out21, 2);
+		long piOut20 = Long.rotateLeft(out2, 62);
+		long piOut11 = Long.rotateLeft(out7, 6);
+		long piOut2 = Long.rotateLeft(out12, 43);
+		long piOut18 = Long.rotateLeft(out17, 15);
+		long piOut9 = Long.rotateLeft(out22, 61);
+		long piOut5 = Long.rotateLeft(out3, 28);
+		long piOut21 = Long.rotateLeft(out8, 55);
+		long piOut12 = Long.rotateLeft(out13, 25);
+		long piOut3 = Long.rotateLeft(out18, 21);
+		long piOut19 = Long.rotateLeft(out23, 56);
+		long piOut15 = Long.rotateLeft(out4, 27);
+		long piOut6 = Long.rotateLeft(out9, 20);
+		long piOut22 = Long.rotateLeft(out14, 39);
+		long piOut13 = Long.rotateLeft(out19, 8);
+		long piOut4 = Long.rotateLeft(out24, 14);
 		// CHI
 		out0 = piOut0 ^ ((~piOut1) & piOut2);
 		out1 = piOut1 ^ ((~piOut2) & piOut3);
@@ -378,43 +360,39 @@ public final class Keccack1600 {
 		state[23] = out23;
 		state[24] = out24;
 	}
-		
+
 	public void clear() {
-		Arrays.fill(state, 0l);		
+		Arrays.fill(state, 0l);
 	}
-		
-	
+
 	final static int NR_ROUNDS = 24;
 	final static int NR_LANES = 25;
-		
+
 	long[] state = new long[NR_LANES];
-	
+
 	int rateBytes;
 	int rateBits;
 	int capacitityBits;
 	int firstRound;
-		
-	final static int index(int x, int y) 
+
+	final static int index(int x, int y)
 	{
 		return (((x)%5)+5*((y)%5));
 	}
 
 	final static long rol64(long l, int offset) {
-		return (offset != 0) ?
-				((l << offset) |  (l >>> (64-offset))) : l;
+		return Long.rotateLeft(l, offset);
 	}
-	
-	
 
 	final static int[] KeccakRhoOffsets = new int[NR_LANES];
 	final static long[] KeccackRoundConstants = new long [NR_ROUNDS];
-	
+
 	static {
 		KeccakF1600_InitializeRoundConstants();
 	    KeccakF1600_InitializeRhoOffsets();
 	}
-	
-	final static void KeccakF1600_InitializeRoundConstants() 
+
+	final static void KeccakF1600_InitializeRoundConstants()
 	{
 		 byte[] LFSRState= new byte[] { 0x01 } ;
 		 int i, j, bitPosition;
@@ -428,9 +406,9 @@ public final class Keccack1600 {
 			 }
 		 }
 	}
-	
+
 	final static boolean LFSR86540(byte[] LFSR)
-	{		
+	{
 	    boolean result = (LFSR[0] & 0x01) != 0;
 	    if ((LFSR[0] & 0x80) != 0)
 	        // Primitive polynomial over GF(2): x^8+x^6+x^5+x^4+1
@@ -438,9 +416,9 @@ public final class Keccack1600 {
 	    else
 	    	LFSR[0] <<= 1;
 	    return result;
-	}	
-	
-	final static void KeccakF1600_InitializeRhoOffsets() 
+	}
+
+	final static void KeccakF1600_InitializeRhoOffsets()
 	 {
 		  int x, y, t, newX, newY;
 
@@ -453,9 +431,9 @@ public final class Keccack1600 {
 			  newY = (2*x+3*y) % 5;
 			  x = newX;
 			  y = newY;
-		  }		
+		  }
 	 }
-	 	 	
+
 	final void theta()
 	{
 		long[] tempC = new long[5];
@@ -473,24 +451,28 @@ public final class Keccack1600 {
 	           for(y=0; y<5; y++)
 	               state[index(x, y)] ^= tempD[x];
 	}
-		
+
 	final void rho()
 	{
 	    int x, y;
 
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
 	        state[index(x, y)] = rol64(state[index(x, y)], KeccakRhoOffsets[index(x, y)]);
-	}	
-	
+	}
+
 	final void pi()
 	{
 		long[] tempA = new long[25];
 	    int x, y;
-	    
+
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
 	        tempA[index(x, y)] = state[index(x, y)];
 	    for(x=0; x<5; x++) for(y=0; y<5; y++)
 	        state[index(0*x+1*y, 2*x+3*y)] = tempA[index(x, y)];
+	}
+
+	public static void main(String[] args) {
+		writeRoundToStdout();
 	}
 
 	static void writeRoundToStdout() {
@@ -499,12 +481,11 @@ public final class Keccack1600 {
 			System.out.println("long out"+i + " = state["+i+ "];");
 		}
 
-		System.out.println("for (int i=firstRound; i < NR_ROUNDS; ++i) { ");
-		System.out.println("// Theta ");
+		System.out.println("for (int i=firstRound; i < NR_ROUNDS; ++i) {");
+		System.out.println("// Theta");
 		for(int x=0; x<5; x++) {
 			System.out.println("long c"+x + " = out"+x+";");
 		}
-
 
 		for(int y=1; y < 5; ++y) {
 			for(int x=0; x<5; x++) {
@@ -517,7 +498,7 @@ public final class Keccack1600 {
 			String c1 = "c" + cIdx1;
 			String c2 = "c" + cIdx2;
 
-			System.out.println("long d" + x + " = ((" + c1 + "  << " + 1 + ") | (" + c1 + " >>> " + 63 + " )) ^ " + c2 + ";");
+			System.out.println("long d" + x + " = Long.rotateLeft(" + c1 + ", 1) ^ " + c2 + ";");
         }
 		for(int x=0; x<25; x++) {
 			System.out.println("out"+x + " = out"+(x)+" ^ d"+(x%5)+ ";");
@@ -533,8 +514,8 @@ public final class Keccack1600 {
 				if(rotationOffset == 0) {
 					System.out.println("long piOut"+outPiIndex+ " = " +theta + ";");
 				} else {
-					int rotationRight = 64-rotationOffset;
-					System.out.println("long piOut"+outPiIndex + " = ((" + theta + "  << "+rotationOffset + ") | (" + theta + " >>> " + rotationRight + " ));");
+
+					System.out.println("long piOut"+outPiIndex + " = Long.rotateLeft("+theta +", "+ rotationOffset+");");
 				}
 			}
 		}
@@ -556,7 +537,7 @@ public final class Keccack1600 {
 			System.out.println("state["+i + "] = out"+i + ";");
 		}
 	}
-	
+
 	final void chi()
 	{
 		long[] tempC = new long[5];
@@ -569,7 +550,7 @@ public final class Keccack1600 {
 	            state[index(x, y)] = tempC[x];
 	    }
 	}
-	
+
 	void iota(int indexRound)
 	{
 	    state[index(0, 0)] ^= KeccackRoundConstants[indexRound];
@@ -581,5 +562,5 @@ public final class Keccack1600 {
 
 	public int getCapacitityBits() {
 		return capacitityBits;
-	}	
+	}
 }

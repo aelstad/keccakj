@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import org.junit.Test;
 import com.github.aelstad.keccakj.fips202.SHA3_256;
 
 public class TestSHA3_256 {
-	
+
 	@Test
 	public void checkTestVectors() throws Exception {
-		InputStream is = getClass().getResourceAsStream("/com/github/aelstad/keccackj/fips202/ShortMsgKAT_SHA3-256.txt");		
-		
-		KeccackDigestTestUtils kdtu = new KeccackDigestTestUtils();
-		List<KeccackDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
+		InputStream is = getClass().getResourceAsStream("/com/github/aelstad/keccakj/fips202/ShortMsgKAT_SHA3-256.txt");
+
+		KeccakDigestTestUtils kdtu = new KeccakDigestTestUtils();
+		List<KeccakDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
 		SHA3_256 sha = new SHA3_256();
 		kdtu.runTests(tests, sha, sha.getDigestLength());
 	}

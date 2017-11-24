@@ -15,9 +15,9 @@
  */
 package com.github.aelstad.keccakj.fips202;
 
-import com.github.aelstad.keccakj.core.AbstractKeccackMessageDigest;
+import com.github.aelstad.keccakj.core.AbstractKeccakMessageDigest;
 
-public final class SHA3_512 extends AbstractKeccackMessageDigest {
+public final class SHA3_512 extends AbstractKeccakMessageDigest {
 
 	private final static byte DOMAIN_PADDING = 2;
 	private final static int DOMMAIN_PADDING_LENGTH = 2;

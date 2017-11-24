@@ -15,14 +15,14 @@
  */
 package com.github.aelstad.keccakj.spi;
 
-import com.github.aelstad.keccakj.core.KeccackSponge;
+import com.github.aelstad.keccakj.core.KeccakSponge;
 import com.github.aelstad.keccakj.fips202.Shake128;
 
 public final class Shake128StreamCipher extends AbstractSpongeStreamCipher {
 	private Shake128 sponge;
 
 	@Override
-	KeccackSponge getSponge() {
+	KeccakSponge getSponge() {
 		if(sponge == null) {
 			sponge = new Shake128();
 		}

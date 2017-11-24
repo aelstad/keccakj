@@ -20,7 +20,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.aelstad.keccakj.core.Keccack1600;
+import com.github.aelstad.keccakj.core.Keccak1600;
 
 public class TestRoundConstants {
 	public static final long[] EXPECTED = new long[] {
@@ -54,6 +54,6 @@ public class TestRoundConstants {
 	@Test
 	public void testRoundConstants() 
 	{
-		Assert.assertTrue(Arrays.equals(Keccack1600.KeccackRoundConstants, EXPECTED));
+		Assert.assertTrue(Arrays.equals(Keccak1600.KeccackRoundConstants, EXPECTED));
 	}
 }

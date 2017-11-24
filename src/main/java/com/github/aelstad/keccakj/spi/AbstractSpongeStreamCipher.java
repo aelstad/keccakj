@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,30 @@ package com.github.aelstad.keccakj.spi;
 
 import javax.crypto.ShortBufferException;
 
-import com.github.aelstad.keccakj.core.KeccackSponge;
+import com.github.aelstad.keccakj.core.KeccakSponge;
 import com.github.aelstad.keccakj.io.BitOutputStream;
 
 public abstract class AbstractSpongeStreamCipher extends AbstractCipher{
-	
+
 	@Override
 	public void reset() {
 		super.reset();
 		getSponge().reset();
 	}
-	
+
 	@Override
 	protected void init() {
-		KeccackSponge sponge = getSponge();
+		KeccakSponge sponge = getSponge();
 		BitOutputStream absorbStream = sponge.getAbsorbStream();
-		absorbStream.write(getKey());	
+		absorbStream.write(getKey());
 		if(getNonce() != null)
 			sponge.getAbsorbStream().write(getNonce());
-		
+
 		sponge.getAbsorbStream().close();
 	}
 
-
 	@Override
-	protected int engineUpdate(byte[] input, int inputOffset, int len, byte[] output, int outputOffset) throws ShortBufferException {				
+	protected int engineUpdate(byte[] input, int inputOffset, int len, byte[] output, int outputOffset) throws ShortBufferException {
 		return getSponge().getSqueezeStream().transform(input, inputOffset, output, outputOffset, len);
 	}
 
@@ -49,9 +48,9 @@ public abstract class AbstractSpongeStreamCipher extends AbstractCipher{
 	protected byte[] engineUpdate(byte[] input, int offset, int len) {
 		byte[] rv = new byte[len];
 		getSponge().getSqueezeStream().transform(input, offset, rv, 0, len);
-		
+
 		return rv;
 	}
 
-	abstract KeccackSponge getSponge(); 
+	abstract KeccakSponge getSponge();
 }

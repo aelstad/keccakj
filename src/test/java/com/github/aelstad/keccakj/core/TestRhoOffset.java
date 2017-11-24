@@ -18,44 +18,44 @@ package com.github.aelstad.keccakj.core;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.aelstad.keccakj.core.Keccack1600;
+import com.github.aelstad.keccakj.core.Keccak1600;
 
 public class TestRhoOffset {
 
 	
 	@Test
 	public void testRhoOffsets() {
-		int[] rhoffsets = Keccack1600.KeccakRhoOffsets;
+		int[] rhoffsets = Keccak1600.KeccakRhoOffsets;
 		
-		Assert.assertEquals(0, rhoffsets[Keccack1600.index(0,0)]);
-		Assert.assertEquals(1, rhoffsets[Keccack1600.index(1,0)]);
-		Assert.assertEquals(62, rhoffsets[Keccack1600.index(2,0)]);
-		Assert.assertEquals(28, rhoffsets[Keccack1600.index(3,0)]);
-		Assert.assertEquals(27, rhoffsets[Keccack1600.index(4,0)]);
+		Assert.assertEquals(0, rhoffsets[Keccak1600.index(0,0)]);
+		Assert.assertEquals(1, rhoffsets[Keccak1600.index(1,0)]);
+		Assert.assertEquals(62, rhoffsets[Keccak1600.index(2,0)]);
+		Assert.assertEquals(28, rhoffsets[Keccak1600.index(3,0)]);
+		Assert.assertEquals(27, rhoffsets[Keccak1600.index(4,0)]);
 		
-		Assert.assertEquals(36, rhoffsets[Keccack1600.index(0,1)]);
-		Assert.assertEquals(44, rhoffsets[Keccack1600.index(1,1)]);
-		Assert.assertEquals(6, rhoffsets[Keccack1600.index(2,1)]);
-		Assert.assertEquals(55, rhoffsets[Keccack1600.index(3,1)]);
-		Assert.assertEquals(20, rhoffsets[Keccack1600.index(4,1)]);
+		Assert.assertEquals(36, rhoffsets[Keccak1600.index(0,1)]);
+		Assert.assertEquals(44, rhoffsets[Keccak1600.index(1,1)]);
+		Assert.assertEquals(6, rhoffsets[Keccak1600.index(2,1)]);
+		Assert.assertEquals(55, rhoffsets[Keccak1600.index(3,1)]);
+		Assert.assertEquals(20, rhoffsets[Keccak1600.index(4,1)]);
 		
-		Assert.assertEquals(3, rhoffsets[Keccack1600.index(0,2)]);
-		Assert.assertEquals(10, rhoffsets[Keccack1600.index(1,2)]);
-		Assert.assertEquals(43, rhoffsets[Keccack1600.index(2,2)]);
-		Assert.assertEquals(25, rhoffsets[Keccack1600.index(3,2)]);
-		Assert.assertEquals(39, rhoffsets[Keccack1600.index(4,2)]);
+		Assert.assertEquals(3, rhoffsets[Keccak1600.index(0,2)]);
+		Assert.assertEquals(10, rhoffsets[Keccak1600.index(1,2)]);
+		Assert.assertEquals(43, rhoffsets[Keccak1600.index(2,2)]);
+		Assert.assertEquals(25, rhoffsets[Keccak1600.index(3,2)]);
+		Assert.assertEquals(39, rhoffsets[Keccak1600.index(4,2)]);
 		
-		Assert.assertEquals(41, rhoffsets[Keccack1600.index(0,3)]);
-		Assert.assertEquals(45, rhoffsets[Keccack1600.index(1,3)]);
-		Assert.assertEquals(15, rhoffsets[Keccack1600.index(2,3)]);
-		Assert.assertEquals(21,rhoffsets[Keccack1600.index(3,3)]);
-		Assert.assertEquals(8, rhoffsets[Keccack1600.index(4,3)]);		
+		Assert.assertEquals(41, rhoffsets[Keccak1600.index(0,3)]);
+		Assert.assertEquals(45, rhoffsets[Keccak1600.index(1,3)]);
+		Assert.assertEquals(15, rhoffsets[Keccak1600.index(2,3)]);
+		Assert.assertEquals(21,rhoffsets[Keccak1600.index(3,3)]);
+		Assert.assertEquals(8, rhoffsets[Keccak1600.index(4,3)]);		
 
-		Assert.assertEquals(18, rhoffsets[Keccack1600.index(0,4)]);
-		Assert.assertEquals(2, rhoffsets[Keccack1600.index(1,4)]);
-		Assert.assertEquals(61, rhoffsets[Keccack1600.index(2,4)]);
-		Assert.assertEquals(56,rhoffsets[Keccack1600.index(3,4)]);
-		Assert.assertEquals(14, rhoffsets[Keccack1600.index(4,4)]);		
+		Assert.assertEquals(18, rhoffsets[Keccak1600.index(0,4)]);
+		Assert.assertEquals(2, rhoffsets[Keccak1600.index(1,4)]);
+		Assert.assertEquals(61, rhoffsets[Keccak1600.index(2,4)]);
+		Assert.assertEquals(56,rhoffsets[Keccak1600.index(3,4)]);
+		Assert.assertEquals(14, rhoffsets[Keccak1600.index(4,4)]);		
 	}
 	
 }

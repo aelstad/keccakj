@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Amund Elstad. 
+ * Copyright 2014 Amund Elstad.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ public class TestShake128 {
 
 	@Test
 	public void checkTestVectors() throws Exception {
-		InputStream is = getClass().getResourceAsStream("/com/github/aelstad/keccackj/fips202/ShortMsgKAT_SHAKE128.txt");		
-		
-		KeccackDigestTestUtils kdtu = new KeccackDigestTestUtils();
-		List<KeccackDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
+		InputStream is = KeccakDigestTestUtils.getResourceStreamInPackage(getClass(), "ShortMsgKAT_SHAKE128.txt");
+
+		KeccakDigestTestUtils kdtu = new KeccakDigestTestUtils();
+		List<KeccakDigestTestUtils.DigestTest> tests = kdtu.parseTests(is);
 		Shake128 shake = new Shake128();
 		kdtu.runTests(tests, shake);
 	}
-	
+
 }
