@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.aelstad</groupId>
 	<artifactId>keccakj</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Pure Java implementation of FIPS202 (and Keccak). Provides implementations of SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128 and SHAKE256
 
