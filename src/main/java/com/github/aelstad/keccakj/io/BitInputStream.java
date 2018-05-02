@@ -30,12 +30,12 @@ public abstract class BitInputStream extends InputStream {
 	/**
 	 * Transform input to output with the input stream as a keystream 
 	 * 
-	 * @param input
-	 * @param inputOff
-	 * @param output
-	 * @param outputOff
-	 * @param len
-	 * @return
+	 * @param input Input byte-array
+	 * @param inputOff Input offset
+	 * @param output Output byte-array
+	 * @param outputOff Output offset
+	 * @param len length in bytes
+	 * @return Number of bytes transformed
 	 */
 	public int transform(byte[] input, int inputOff, byte[] output, int outputOff, int len) {
 		return (int) (transformBits(input, ((long)inputOff)<<3, output, ((long)outputOff)<<3, ((long)len)<<3)>>3);
@@ -50,10 +50,10 @@ public abstract class BitInputStream extends InputStream {
 	/**
 	 * Transform input to output using the input stream as a keystream 
 	 * 
-	 * @param input
-	 * @param output
+	 * @param input Input byte array
+	 * @param output Output byte array
 	 * 
-	 * @return
+	 * @return Number of bytes transformed
 	 */
 	public int transform(byte[] input, byte[] output) {
 		return (int) (transformBits(input, 0l, output, 0l, ((long)input.length)<<3)>>3);
@@ -74,12 +74,12 @@ public abstract class BitInputStream extends InputStream {
 	/**
 	 * Transform input to output using the input stream as a keystream 
 	 * 
-	 * @param input
-	 * @param inputOff
-	 * @param output
-	 * @param outputOff
-	 * @param bitLen
-	 * @return
+	 * @param input Input byte array
+	 * @param inputOff Input offset in bits
+	 * @param output Output byte array
+	 * @param outputOff Output offset in bits
+	 * @param bitLen Number of bits
+	 * @return Number of bits transformed
 	 */
 	public abstract long transformBits(byte[] input, long inputOff, byte[] output, long outputOff, long bitLen);
 }

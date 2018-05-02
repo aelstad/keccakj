@@ -52,7 +52,7 @@ public final class DuplexRandom {
 	 * security level. For efficiency it should be chosen such that
 	 * we get a multiple of 64-bytes output per permutation. This
 	 * generator used 3 bits of padding so pick capcitiyInBits = n*64 - 3
-	 * with n between [4, 25>. Higher n gives higher security, but lower
+	 * with n between [4, 25&gt;. Higher n gives higher security, but lower
 	 * performance.
 	 */
 	public DuplexRandom(int capacityInBits) {
@@ -68,9 +68,9 @@ public final class DuplexRandom {
 	 * the security of the seed. Seeds are accumulated and not used
 	 * before you have supplied at least 16 bytes/128 bits.
 	 *
-	 * @param seed
-	 * @param off
-	 * @param len
+	 * @param seed Byte array
+	 * @param off Offset in array
+	 * @param len Length in bytes
 	 */
 	public void seed(byte[] seed, int off, int len) {
 		if((duplexIn.size()+len) >= MIN_SEED_LENGTH_BYTES) {
@@ -101,9 +101,9 @@ public final class DuplexRandom {
 	/**
 	 * Get seed bytes from the master seed generator
 	 *
-	 * @param buf
-	 * @param off
-	 * @param len
+	 * @param buf Byte array
+	 * @param off Offset in array
+	 * @param len Length
 	 */
 	public static void getSeedBytes(byte[] buf, int off, int len) {
 		synchronized (seedGenerator) {
@@ -138,9 +138,9 @@ public final class DuplexRandom {
 	/**
 	 * Feed seed material
 	 *
-	 * @param buf
-	 * @param off
-	 * @param len
+	 * @param buf Seed array
+	 * @param off Offset in array
+	 * @param len Length of seed
 	 */
 	private void feed(byte[] buf, int off, int len) {
 		pos = 0;

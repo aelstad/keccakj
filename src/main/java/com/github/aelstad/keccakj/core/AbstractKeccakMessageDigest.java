@@ -15,10 +15,10 @@ public abstract class AbstractKeccakMessageDigest extends MessageDigest {
 	 * Security level in bits is min(capacity/2,digestLength*8).
 	 *
 	 * @param algorithm Algorithm name
-	 * @param capacity Keccack capacity in bits. Must be a multiple of 8.
+	 * @param capacityInBits Keccack capacity in bits. Must be a multiple of 8.
 	 * @param digestLength Length of digest in bytes
-	 * @param domainPadding
-	 * @param domainPaddingBits
+	 * @param domainPadding Domain padding value
+	 * @param domainPaddingBitLength Domain padding bits
 	 */
 	public AbstractKeccakMessageDigest(String algorithm, int capacityInBits, int digestLength, byte domainPadding, int domainPaddingBitLength)
 	{
